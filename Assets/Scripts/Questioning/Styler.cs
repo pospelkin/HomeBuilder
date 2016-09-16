@@ -83,7 +83,8 @@ namespace HomeBuilder.Questioning
 
         void SetStyle(int index)
         {
-            if (index < 0 || index >= styles.Count) return;
+            if (index >= styles.Count) index = 0;
+            if (index < 0) index = styles.Count-1;
 
             current = index;
             styleImage.sprite   = styles[current].image;
@@ -92,8 +93,8 @@ namespace HomeBuilder.Questioning
 
         void UpdateButtons()
         {
-            prevStyle.enabled = !(current == 0);
-            nextStyle.enabled = !(current == (styles.Count - 1));
+            //prevStyle.enabled = !(current == 0);
+            //nextStyle.enabled = !(current == (styles.Count - 1));
         }
 
         public class Style
