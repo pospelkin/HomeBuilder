@@ -70,6 +70,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Assets.cs" />
+    <Compile Include="Assets\Scripts\Camera\GCameraController.cs" />
+    <Compile Include="Assets\Scripts\Camera\SphereCamera.cs" />
     <Compile Include="Assets\Scripts\Configuration.cs" />
     <Compile Include="Assets\Scripts\Core\Appartment.cs" />
     <Compile Include="Assets\Scripts\Core\Designer.cs" />
@@ -80,6 +82,7 @@
     <Compile Include="Assets\Scripts\Designing\Cube.cs" />
     <Compile Include="Assets\Scripts\History\Historian.cs" />
     <Compile Include="Assets\Scripts\History\Note.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\GCamera.cs" />
     <Compile Include="Assets\Scripts\Menu\Butler.cs" />
     <Compile Include="Assets\Scripts\Questioning\Counter.cs" />
     <Compile Include="Assets\Scripts\Questioning\Inquirer.cs" />

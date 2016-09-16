@@ -9,7 +9,10 @@ namespace HomeBuilder.Designing
     public class Constructor : MonoBehaviour
     {
 
+        public GCameraController cameraController;
         public Transform mainTransform;
+
+        float[] oldAngles = new float[] { 0, 0 };
 
         Color[] colors = new Color[] { Color.blue, Color.green, Color.red, Color.yellow, Color.white, Color.magenta, Color.black };
         Appartment appartment;
@@ -23,6 +26,32 @@ namespace HomeBuilder.Designing
         public void Save()
         {
             Master.GetInstance().history.Save(appartment.GetName(), appartment);
+        }
+
+        public void Toggle2D()
+        {
+            cameraController.enabled = !cameraController.enabled;
+
+            if (!cameraController.enabled)
+            {
+                SphereCamera cam = (SphereCamera)cameraController.gCamera;
+
+                oldAngles[0] = cam.GetTita();
+                oldAngles[1] = cam.GetPhi();
+
+                cam.SetTita(0);
+                cam.SetPhi (0);
+
+                cameraController.gCamera.UpdatePosition();
+            } else
+            {
+                SphereCamera cam = (SphereCamera)cameraController.gCamera;
+
+                cam.SetTita(oldAngles[0]);
+                cam .SetPhi(oldAngles[1]);
+
+                cameraController.gCamera.UpdatePosition();
+            }
         }
 
         void Start()

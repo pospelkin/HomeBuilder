@@ -29,17 +29,18 @@ namespace HomeBuilder
         public class PrefabAssets
         {
 
-            public string cube      = "Prefabs/cube_prefab";
-            public string note      = "Prefabs/note_prefab";
-            public string module    = "Prefabs/module_prefab";
+            readonly public string cube      = "Prefabs/cube_prefab";
+            readonly public string note      = "Prefabs/note_prefab";
+            readonly public string module    = "Prefabs/module_prefab";
+            readonly public string moduleS   = "Prefabs/module_small_prefab"; 
 
         }
 
         public class SpriteAssets
         {
-            public string styleModern   = "Sprites/style_modern";
-            public string styleClassic  = "Sprites/style_classic";
-            public string styleOld      = "Sprites/style_old";
+            readonly public string styleModern   = "Sprites/style_modern";
+            readonly public string styleClassic  = "Sprites/style_classic";
+            readonly public string styleOld      = "Sprites/style_old";
         }
 
     }

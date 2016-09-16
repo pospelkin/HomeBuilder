@@ -23,7 +23,7 @@ namespace HomeBuilder.Core
                 prepareModule(modules[i]);
             }
 
-            createSheme(modules, appartment);
+            createSheme(modules, appartment, spare);
         }
 
         public float GetSpareSquare(ModuleInfo[] modules, float square)
@@ -60,44 +60,101 @@ namespace HomeBuilder.Core
             module.SetSize(minWidth, minHeight);
         }
 
-        void createSheme(ModuleInfo[] modules, Appartment appartment)
+        void createSheme(ModuleInfo[] modules, Appartment appartment, float spareSq = 0)
         {
             float width     = Mathf.Sqrt(appartment.GetSquare());
             float height    = width;
 
-            int rows = (int) Mathf.Floor(modules.Length / 2);
-            int cols = modules.Length - rows;
+            int cols = (int) Mathf.Floor(Mathf.Sqrt( modules.Length ) ) + 1 ;
+            int rows = (int) Mathf.Ceil(modules.Length / (float) cols);
 
             float mHeight = height / rows;
 
             int count   = 0;
-            float y     = 0;
 
-            float maxWidth = 0;
+            float spare = spareSq / modules.Length;
+
+            List<Rect>[] levels = new List<Rect>[rows];
+
             for (int i = 0; i < rows; i++)
             {
-                y = i * mHeight;
-                float x = 0;
+                levels[i] = new List<Rect>();
+
                 for (int j = 0; j < cols; j++)
                 {
                     if (count >= modules.Length) break;
                     ModuleInfo module = modules[count];
                     count++;
 
-                    float mWidht = module.GetSquare() / mHeight;
+                    float h = Mathf.Max(mHeight, module.GetSize()[1]);
+                    float w = ((module.GetSquare() + spare) / h);
+                    if (w < module.GetSize()[0])
+                    {
+                        w = module.GetSize()[0];
+                        h = ((module.GetSquare() + spare) / w);
+                    }
 
-                    module.SetSize(mWidht, mHeight);
-                    module.SetPosition(x, y);
+                    Rect rect = GetRectForModule(module, w, h, levels[i], i > 0 ? levels[i-1] : null);
 
-                    x += mWidht;
-                }
-                if (x > maxWidth)
-                {
-                    maxWidth = x;
+                    module.SetSize(rect.width, rect.height);
+                    module.SetPosition(rect.x, rect.y);
+
+                    levels[i].Add(rect);
                 }
             }
 
-            appartment.SetSize(maxWidth, height);
+            float[] size = GetAppSize(levels);
+            appartment.SetSize(size[0], size[1]);
+        }
+
+        Rect GetRectForModule(ModuleInfo module, float w, float h, List<Rect> level, List<Rect> upperLevel = null)
+        {
+            float x = GetX(level);
+            float y = upperLevel == null ? 0 : GetY(x, w, upperLevel);
+
+            return new Rect(new Vector2(x, y), new Vector2(w, h));
+        }
+
+        float GetX(List<Rect> level)
+        {
+            return level.Count > 0 ? level[level.Count - 1].xMax : 0;
+        }
+
+        float GetY(float x, float width, List<Rect> upperLevel)
+        {
+            float   y1 = 0,
+                    y2 = 0;
+
+            int l = upperLevel.Count;
+            for (int i = 0; i < l; i++)
+            {
+                if (upperLevel[i].xMin <= x && upperLevel[i].xMax >= x)
+                {
+                    y1 = upperLevel[i].yMax;
+                }
+                if (upperLevel[i].xMin <= x + width && upperLevel[i].xMax >= x + width)
+                {
+                    y2 = upperLevel[i].yMax;
+                }
+            }
+
+            return Mathf.Max(y1, y2);
+        }
+
+        float[] GetAppSize(List<Rect>[] rects)
+        {
+            float xMax = 0, yMax = 0;
+            for (int i = 0; i < rects.Length; i++)
+            {
+                int l = rects[i].Count;
+                for (int j = 0; j < l; j++)
+                {
+                    if (rects[i][j].xMax > xMax) xMax = rects[i][j].xMax;
+                    if (rects[i][j].yMax > yMax) yMax = rects[i][j].yMax;
+                }
+            }
+
+            return new float[] { xMax, yMax };
         }
 
         static public Appartment GetRandomAppartment()

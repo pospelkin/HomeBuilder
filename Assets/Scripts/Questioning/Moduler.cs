@@ -6,6 +6,7 @@ namespace HomeBuilder.Questioning
     public class Moduler : MonoBehaviour
     {
 
+        public Transform content;
         public Module[] modules;
 
         float _squareTotal  = 0;
@@ -32,9 +33,9 @@ namespace HomeBuilder.Questioning
                     ModuleInfo info = new ModuleInfo();
                     info.name       = modules[i].GetName();
                     info.count      = modules[i].GetCount();
-                    info.minSquare  = modules[i].GetSquare();
-                    info.minWidth   = modules[i].GetWidth();
-                    info.minHeight  = modules[i].GetHeight();
+                    info.minSquare  = modules[i].GetParams().minSquare;
+                    info.minWidth   = modules[i].GetParams().minWidth;
+                    info.minHeight  = modules[i].GetParams().minHeight;
 
                     infos.Add(info);
                 }
@@ -71,7 +72,7 @@ namespace HomeBuilder.Questioning
 
             for (int i = 0; i < modules.Length; i++)
             {
-                sqaure += modules[i].main.count * modules[i].square.count;
+                sqaure += (int) (modules[i].main.count * (modules[i].IsExtended() ? modules[i].square.count : modules[i].GetParams().minSquare));
             }
 
             return sqaure;
@@ -79,9 +80,15 @@ namespace HomeBuilder.Questioning
 
         void Start()
         {
+            modules = new Module[Configuration.Appartment.approvedModules.Length];
             for (int i = 0; i < modules.Length; i++)
             {
-                modules[i].SetModuler(this);
+                Configuration.Appartment.ModuleParams p = Configuration.Appartment.approvedModules[i];
+                GameObject obj = Instantiate(Resources.Load(Assets.GetInstance().prefabs.moduleS), content) as GameObject;
+                obj.transform.localScale = new Vector3(1, 1, 1);
+
+                modules[i] = obj.GetComponent<Module>();
+                modules[i].SetModulerAndParams(this, p);
             }
         }
 
@@ -89,9 +96,9 @@ namespace HomeBuilder.Questioning
         {
             public string name;
             public int count;
-            public int minSquare;
-            public int minWidth;
-            public int minHeight;
+            public float minSquare;
+            public float minWidth;
+            public float minHeight;
         }
 
     }

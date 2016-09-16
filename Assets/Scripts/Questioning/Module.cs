@@ -10,15 +10,29 @@ namespace HomeBuilder.Questioning
         public Counter width;
         public Counter height;
 
+        Configuration.Appartment.ModuleParams parameters;
         Moduler moduler;
 
-        public void SetModuler(Moduler m)
+        public void SetModulerAndParams(Moduler m, Configuration.Appartment.ModuleParams p)
         {
-            moduler = m;
+            moduler     = m;
+            parameters  = p;
+
+            main.SetName(parameters.name);
+        }
+
+        public bool IsExtended()
+        {
+            return square != null;
         }
 
         public void SetLimits()
         {
+        }
+
+        public Configuration.Appartment.ModuleParams GetParams()
+        {
+            return parameters;
         }
 
         public void SetName(string name)
@@ -43,20 +57,22 @@ namespace HomeBuilder.Questioning
 
         public int GetWidth()
         {
-            return square.count;
+            return width.count;
         }
 
         public int GetHeight()
         {
-            return square.count;
+            return height.count;
         }
 
         void Update()
         {
             main    .SetMax   ((int) Mathf.Min( main.count + moduler.countAvailable, Configuration.Appartment.maxModuleOfType) );
 
-            square  .SetMin(Configuration.Appartment.minSquare);
-            square  .SetMax   (square.count + (int) (moduler.squareAvailable));
+            if (!IsExtended()) return;
+
+            square  .SetMin((int) parameters.minSquare);
+            square  .SetMax(square.count + (int) (moduler.squareAvailable));
 
             if (square.count > 0)
             {

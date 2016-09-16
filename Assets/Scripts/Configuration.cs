@@ -6,21 +6,21 @@ namespace HomeBuilder
     public class Configuration
     {
 
-        static public string name       = "HomeBuilder";
-        static public string version    = "0.1";
+        readonly static public string name       = "HomeBuilder";
+        readonly static public string version    = "0.1";
         
         public class Scenes
         {
-            static public string menuScene = "Menu";
-            static public string questioningScene = "Questioning";
-            static public string designingScene = "Designing";
-            static public string historyScene = "History";
+            readonly static public string menuScene = "Menu";
+            readonly static public string questioningScene = "Questioning";
+            readonly static public string designingScene = "Designing";
+            readonly static public string historyScene = "History";
         }
 
         public class Appartment
         {
-            static public int minSquare = 10;
-            static public int maxModuleOfType = 2;
+            readonly static public int minSquare = 10;
+            readonly static public int maxModuleOfType = 2;
 
             public enum Styles { MODERN, CLASSIC, OLD }
             static public string GetStyle(Styles style)
@@ -35,6 +35,29 @@ namespace HomeBuilder
                         return "Old";
                     default:
                         return "Noname";
+                }
+            }
+
+            readonly static public ModuleParams[] approvedModules = new ModuleParams[] {
+                new ModuleParams("Kichen"   , 8,    2, 4),
+                new ModuleParams("Bathroom" , 6,    2, 3),
+                new ModuleParams("GuestRoom", 12,    3, 4),
+                new ModuleParams("Bedroom"  , 16,   4, 4)
+            };
+
+            public class ModuleParams
+            {
+                readonly public string name;
+                readonly public float minSquare;
+                readonly public float minWidth;
+                readonly public float minHeight;
+
+                public ModuleParams(string name, float sq, float w, float h)
+                {
+                    this.name   = name;
+                    minSquare   = sq;
+                    minWidth    = w;
+                    minHeight   = h;
                 }
             }
             
