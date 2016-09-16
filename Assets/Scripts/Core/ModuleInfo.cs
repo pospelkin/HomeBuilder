@@ -8,7 +8,7 @@ namespace HomeBuilder.Core
 
         string  name;
         float   square;
-        string  style;
+        Configuration.Appartment.Styles  style;
 
         float width     = -1;
         float height    = -1;
@@ -37,12 +37,12 @@ namespace HomeBuilder.Core
             this.y = y;
         }
 
-        public void SetStyle(string style)
+        public void SetStyle(Configuration.Appartment.Styles style)
         {
             this.style = style;
         }
 
-        public string GetStyle()
+        public Configuration.Appartment.Styles GetStyle()
         {
             return style;
         }

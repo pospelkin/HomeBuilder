@@ -68,13 +68,17 @@ namespace HomeBuilder.Questioning
         {
             styles = new List<Style>();
 
-            styles.Add(new Style("Modern", Resources.Load<Sprite>(Assets.GetInstance().sprites.styleModern)));
-            styles.Add(new Style("Classic", Resources.Load<Sprite>(Assets.GetInstance().sprites.styleClassic)));
+            styles.Add(new Style(Configuration.Appartment.Styles.MODERN, Resources.Load<Sprite>(Assets.GetInstance().sprites.styleModern)));
+            styles.Add(new Style(Configuration.Appartment.Styles.CLASSIC, Resources.Load<Sprite>(Assets.GetInstance().sprites.styleClassic)));
+            styles.Add(new Style(Configuration.Appartment.Styles.OLD, Resources.Load<Sprite>(Assets.GetInstance().sprites.styleOld)));
 
             SetStyle(current);
             UpdateButtons();
 
-            sizeSlider.enabled = true;
+            if (sizeSlider != null)
+            {
+                sizeSlider.enabled = true;
+            }
         }
 
         void SetStyle(int index)
@@ -83,7 +87,7 @@ namespace HomeBuilder.Questioning
 
             current = index;
             styleImage.sprite   = styles[current].image;
-            styleText.text      = styles[current].name;
+            styleText.text      = Configuration.Appartment.GetStyle(styles[current].name);
         }
 
         void UpdateButtons()
@@ -94,10 +98,10 @@ namespace HomeBuilder.Questioning
 
         public class Style
         {
-            readonly public string   name;
+            readonly public Configuration.Appartment.Styles name;
             readonly public Sprite   image;
 
-            public Style(string name, Sprite image)
+            public Style(Configuration.Appartment.Styles name, Sprite image)
             {
                 this.name   = name;
                 this.image  = image;

@@ -39,6 +39,7 @@ namespace HomeBuilder
         {
             public string styleModern   = "Sprites/style_modern";
             public string styleClassic  = "Sprites/style_classic";
+            public string styleOld      = "Sprites/style_old";
         }
 
     }

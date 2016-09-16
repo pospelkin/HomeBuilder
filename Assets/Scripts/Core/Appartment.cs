@@ -9,7 +9,7 @@ namespace HomeBuilder.Core
 
         readonly int    id;
         string          name;
-        string          style;
+        Configuration.Appartment.Styles style;
         float           square;
         float           width;
         float           height;
@@ -55,12 +55,12 @@ namespace HomeBuilder.Core
             return name;
         }
 
-        public void SetStyle(string style)
+        public void SetStyle(Configuration.Appartment.Styles style)
         {
             this.style = style;
         }
 
-        public string GetStyle()
+        public Configuration.Appartment.Styles GetStyle()
         {
             return style;
         }

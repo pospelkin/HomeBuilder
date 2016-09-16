@@ -15,10 +15,10 @@ namespace HomeBuilder.Questioning
         public Text caption;
 
         public Styler styler;
+        public Styler stylerOnly;
         public Moduler moduler;
 
         int step = 0;
-        float squareUsed = 0;
         Appartment app;
         List<ModuleInfo> modules;
 
@@ -75,20 +75,21 @@ namespace HomeBuilder.Questioning
                     Moduler.ModuleInfo[] ms = moduler.GetModules();
                     for (int i = 0; i < ms.Length; i++)
                     {
-                        for (int j = 0; j < ms[i].GetCount(); j++)
+                        for (int j = 0; j < ms[i].count; j++)
                         {
-                            modules.Add(new ModuleInfo(ms[i].GetName()));
+                            ModuleInfo info = new ModuleInfo(ms[i].name);
+                            info.SetSquare(ms[i].minSquare);
+                            info.SetSize(ms[i].minWidth, ms[i].minHeight);
+
+                            modules.Add(info);
                         }
                     }
 
-                    squareUsed = 0;
                     StartStylerForModule(0);
                     break;
                 default:
-                    modules[step - 3].SetStyle(styler.GetStyle().name);
-                    modules[step - 3].SetSquare(styler.GetSize());
+                    modules[step - 3].SetStyle(stylerOnly.GetStyle().name);
 
-                    squareUsed += styler.GetSize();
                     StartStylerForModule(step - 2);
                     break;
             }
@@ -96,8 +97,7 @@ namespace HomeBuilder.Questioning
 
         void StartStyler()
         {
-            moduler.gameObject.SetActive(false);
-            styler.gameObject.SetActive(true);
+            TurnOn(styler.gameObject);
 
             caption.text = "Home Style";
             styler.SetStyles();
@@ -106,13 +106,11 @@ namespace HomeBuilder.Questioning
 
         void StartModuler()
         {
-            moduler.gameObject.SetActive(true);
-            styler.gameObject.SetActive(false);
+            TurnOn(moduler.gameObject);
 
             caption.text = "Select Modules";
 
-            float l = Mathf.Floor(app.GetSquare() / 10f);
-            moduler.SetLimit((int) l);
+            moduler.SetLimits(app);
             modules = new List<ModuleInfo>();
         }
 
@@ -124,18 +122,25 @@ namespace HomeBuilder.Questioning
                 return;
             }
 
-            moduler.gameObject.SetActive(false);
-            styler.gameObject.SetActive(true);
-            
-            caption.text = "Module Style #" + index;
+            TurnOn(stylerOnly.gameObject);
 
-            int max = (int)(app.GetSquare() - squareUsed - (modules.Count - (index + 1)) * 10f);
-            styler.SetMinMax(index == modules.Count-1 ? max : 10, max);
+            stylerOnly.SetStyles();
+            caption.text = "Module Style #" + index;
         }
 
         bool IsReadyToProceed()
         {
             return step != 1 || (moduler.GetTotalCount() > 0);
+        }
+
+        void TurnOn(GameObject obj)
+        {
+            moduler     .gameObject.SetActive(false);
+            styler      .gameObject.SetActive(false);
+            stylerOnly  .gameObject.SetActive(false);
+
+            obj.SetActive(true);
+
         }
 
         void Finish()

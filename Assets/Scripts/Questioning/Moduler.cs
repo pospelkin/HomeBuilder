@@ -8,7 +8,18 @@ namespace HomeBuilder.Questioning
 
         public Module[] modules;
 
-        int limit;
+        float _squareTotal  = 0;
+        float _squareUsed {
+            get { return GetTotalSquare(); }
+        }
+        public float squareAvailable {
+            get { return _squareTotal - _squareUsed;  }
+        }
+
+        public float countAvailable
+        {
+            get { return Mathf.Floor(squareAvailable / Configuration.Appartment.minSquare); }
+        }
 
         public ModuleInfo[] GetModules()
         {
@@ -18,31 +29,52 @@ namespace HomeBuilder.Questioning
             {
                 if (modules[i].GetCount() > 0)
                 {
-                    infos.Add(new ModuleInfo(modules[i].GetName(), modules[i].GetCount()));
+                    ModuleInfo info = new ModuleInfo();
+                    info.name       = modules[i].GetName();
+                    info.count      = modules[i].GetCount();
+                    info.minSquare  = modules[i].GetSquare();
+                    info.minWidth   = modules[i].GetWidth();
+                    info.minHeight  = modules[i].GetHeight();
+
+                    infos.Add(info);
                 }
             }
 
             return infos.ToArray();
         }
 
-        public void SetLimit(int limit)
+        public void SetLimits(Core.Appartment app)
         {
-            this.limit = limit;
-        }
+            _squareTotal    = app.GetSquare();
 
-        public bool IsMax()
-        {
-            return GetTotalCount() >= limit;
+            for (int i = 0; i < modules.Length; i++)
+            {
+                modules[i].SetLimits();
+            }
         }
 
         public int GetTotalCount()
         {
             int count = 0;
+
             for (int i = 0; i < modules.Length; i++)
             {
-                count += modules[i].GetCount();
+                count += modules[i].main.count;
             }
+
             return count;
+        }
+
+        public int GetTotalSquare()
+        {
+            int sqaure = 0;
+
+            for (int i = 0; i < modules.Length; i++)
+            {
+                sqaure += modules[i].main.count * modules[i].square.count;
+            }
+
+            return sqaure;
         }
 
         void Start()
@@ -55,34 +87,11 @@ namespace HomeBuilder.Questioning
 
         public class ModuleInfo
         {
-            string name;
-            int count;
-
-            public ModuleInfo(string name, int count)
-            {
-                SetName ( name  );
-                SetCount( count );
-            }
-
-            public void SetName(string name)
-            {
-                this.name = name;
-            }
-
-            public void SetCount(int count)
-            {
-                this.count = count;
-            }
-
-            public string GetName()
-            {
-                return name;
-            }
-
-            public int GetCount()
-            {
-                return count;
-            }
+            public string name;
+            public int count;
+            public int minSquare;
+            public int minWidth;
+            public int minHeight;
         }
 
     }

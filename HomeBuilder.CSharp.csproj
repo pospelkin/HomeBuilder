@@ -81,6 +81,7 @@
     <Compile Include="Assets\Scripts\History\Historian.cs" />
     <Compile Include="Assets\Scripts\History\Note.cs" />
     <Compile Include="Assets\Scripts\Menu\Butler.cs" />
+    <Compile Include="Assets\Scripts\Questioning\Counter.cs" />
     <Compile Include="Assets\Scripts\Questioning\Inquirer.cs" />
     <Compile Include="Assets\Scripts\Questioning\Module.cs" />
     <Compile Include="Assets\Scripts\Questioning\Moduler.cs" />
