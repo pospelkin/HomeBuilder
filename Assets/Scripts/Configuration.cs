@@ -39,10 +39,10 @@ namespace HomeBuilder
             }
 
             readonly static public ModuleParams[] approvedModules = new ModuleParams[] {
-                new ModuleParams("Kichen"   , 8,    2, 4),
-                new ModuleParams("Bathroom" , 6,    2, 3),
-                new ModuleParams("GuestRoom", 12,    3, 4),
-                new ModuleParams("Bedroom"  , 16,   4, 4)
+                new ModuleParams("Kichen"   , 8,    2, 4, Color.red),
+                new ModuleParams("Bathroom" , 6,    2, 3, Color.green),
+                new ModuleParams("GuestRoom", 12,   3, 4, Color.blue),
+                new ModuleParams("Bedroom"  , 16,   4, 4, Color.gray)
             };
 
             public class ModuleParams
@@ -51,13 +51,15 @@ namespace HomeBuilder
                 readonly public float minSquare;
                 readonly public float minWidth;
                 readonly public float minHeight;
+                readonly public Color color;
 
-                public ModuleParams(string name, float sq, float w, float h)
+                public ModuleParams(string name, float sq, float w, float h, Color color)
                 {
                     this.name   = name;
                     minSquare   = sq;
                     minWidth    = w;
                     minHeight   = h;
+                    this.color  = color;
                 }
             }
             

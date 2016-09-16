@@ -8,7 +8,8 @@ namespace HomeBuilder.Core
 
         string  name;
         float   square;
-        Configuration.Appartment.Styles  style;
+        Configuration.Appartment.Styles         style;
+        Configuration.Appartment.ModuleParams   param;
 
         float width     = -1;
         float height    = -1;
@@ -23,6 +24,16 @@ namespace HomeBuilder.Core
         public void SetSquare(float square)
         {
             this.square = square;
+        }
+
+        public void SetParams(Configuration.Appartment.ModuleParams p)
+        {
+            param = p;
+        }
+
+        public Configuration.Appartment.ModuleParams GetParams()
+        {
+            return param;
         }
 
         public void SetSize(float w, float h)

@@ -14,7 +14,6 @@ namespace HomeBuilder.Designing
 
         float[] oldAngles = new float[] { 0, 0 };
 
-        Color[] colors = new Color[] { Color.blue, Color.green, Color.red, Color.yellow, Color.white, Color.magenta, Color.black };
         Appartment appartment;
         List<Cube> cubes;
 
@@ -83,7 +82,7 @@ namespace HomeBuilder.Designing
             ModuleInfo[] modules = appartment.GetModules();
             for (int i = 0; i < modules.Length; i++)
             {
-                cubes.Add( GetCube(modules[i].GetSize()[0], modules[i].GetSize()[1], modules[i].GetPosition()[0], modules[i].GetPosition()[1], GetColor(i)) );
+                cubes.Add( GetCube(modules[i].GetSize()[0], modules[i].GetSize()[1], modules[i].GetPosition()[0], modules[i].GetPosition()[1], modules[i].GetParams().color) );
             }
         }
 
@@ -101,17 +100,6 @@ namespace HomeBuilder.Designing
             obj.GetComponent<MeshRenderer>().material.color = color;
 
             return cube;
-        }
-
-        Color GetColor(int index)
-        {
-            if (index >= 0 && index < colors.Length)
-            {
-                return colors[index];
-            } else
-            {
-                return new Color(Random.Range(0, 1), Random.Range(0, 1), Random.Range(0, 1), 1);
-            }
         }
 
         //void SetObserverCam()

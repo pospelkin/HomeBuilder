@@ -78,8 +78,7 @@ namespace HomeBuilder.Questioning
                         for (int j = 0; j < ms[i].count; j++)
                         {
                             ModuleInfo info = new ModuleInfo(ms[i].name);
-                            info.SetSquare(ms[i].minSquare);
-                            info.SetSize(ms[i].minWidth, ms[i].minHeight);
+                            info.SetParams(ms[i].param);
 
                             modules.Add(info);
                         }

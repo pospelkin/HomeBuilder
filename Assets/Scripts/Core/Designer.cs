@@ -39,9 +39,9 @@ namespace HomeBuilder.Core
 
         void prepareModule(ModuleInfo module)
         {
-            float minSquare = module.GetSquare();
-            float minWidth  = module.GetSize()[0];
-            float minHeight = module.GetSize()[1];
+            float minSquare = module.GetParams().minSquare;
+            float minWidth  = module.GetParams().minWidth;
+            float minHeight = module.GetParams().minHeight;
 
             float spareSqrt = minSquare - minHeight * minWidth;
             if (spareSqrt < 0)
@@ -168,12 +168,14 @@ namespace HomeBuilder.Core
             kitchen.SetSquare(50);
             kitchen.SetSize(10, 5);
             kitchen.SetPosition(0, 0);
+            kitchen.SetParams(Configuration.Appartment.approvedModules[0]);
 
             ModuleInfo bathroom = new ModuleInfo("Bathroom");
             bathroom.SetStyle(Configuration.Appartment.Styles.CLASSIC);
             bathroom.SetSquare(50);
             bathroom.SetSize(10, 5);
             bathroom.SetPosition(0, 5);
+            bathroom.SetParams(Configuration.Appartment.approvedModules[1]);
 
             res.AddModule(kitchen);
             res.AddModule(bathroom);

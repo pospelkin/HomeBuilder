@@ -33,9 +33,7 @@ namespace HomeBuilder.Questioning
                     ModuleInfo info = new ModuleInfo();
                     info.name       = modules[i].GetName();
                     info.count      = modules[i].GetCount();
-                    info.minSquare  = modules[i].GetParams().minSquare;
-                    info.minWidth   = modules[i].GetParams().minWidth;
-                    info.minHeight  = modules[i].GetParams().minHeight;
+                    info.param      = modules[i].GetParams();
 
                     infos.Add(info);
                 }
@@ -96,9 +94,7 @@ namespace HomeBuilder.Questioning
         {
             public string name;
             public int count;
-            public float minSquare;
-            public float minWidth;
-            public float minHeight;
+            public Configuration.Appartment.ModuleParams param;
         }
 
     }
