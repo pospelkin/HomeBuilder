@@ -80,6 +80,12 @@
     <Compile Include="Assets\Scripts\Core\ModuleInfo.cs" />
     <Compile Include="Assets\Scripts\Designing\Constructor.cs" />
     <Compile Include="Assets\Scripts\Designing\Cube.cs" />
+    <Compile Include="Assets\Scripts\Designing\Edit\DragOperator.cs" />
+    <Compile Include="Assets\Scripts\Designing\Edit\Editor.cs" />
+    <Compile Include="Assets\Scripts\Designing\Edit\Layout.cs" />
+    <Compile Include="Assets\Scripts\Designing\Edit\LayoutElement.cs" />
+    <Compile Include="Assets\Scripts\Designing\Edit\PlanRoom.cs" />
+    <Compile Include="Assets\Scripts\Designing\Edit\PlanRoomControls.cs" />
     <Compile Include="Assets\Scripts\History\Historian.cs" />
     <Compile Include="Assets\Scripts\History\Note.cs" />
     <Compile Include="Assets\Scripts\Interfaces\GCamera.cs" />

@@ -11,11 +11,13 @@ namespace HomeBuilder.Designing
 
         public GCameraController cameraController;
         public Transform mainTransform;
+        public Editor editor;
 
-        float[] oldAngles = new float[] { 0, 0 };
+        float[] oldValues = new float[] { 0, 0, 0 };
 
-        Appartment appartment;
-        List<Cube> cubes;
+        Layout      layout;
+        Appartment  appartment;
+        List<Cube>  cubes;
 
         public void Menu()
         {
@@ -35,35 +37,43 @@ namespace HomeBuilder.Designing
             {
                 SphereCamera cam = (SphereCamera)cameraController.gCamera;
 
-                oldAngles[0] = cam.GetTita();
-                oldAngles[1] = cam.GetPhi();
+                oldValues[0] = cam.GetTita();
+                oldValues[1] = cam.GetPhi();
+                oldValues[2] = cam.GetRadius();
 
                 cam.SetTita(0);
-                cam.SetPhi (0);
+                cam.SetPhi(0);
+                cam.SetRadius(14);
 
                 cameraController.gCamera.UpdatePosition();
+
+                editor.TurnOn();
             } else
             {
                 SphereCamera cam = (SphereCamera)cameraController.gCamera;
 
-                cam.SetTita(oldAngles[0]);
-                cam .SetPhi(oldAngles[1]);
+                cam.SetTita(oldValues[0]);
+                cam.SetPhi(oldValues[1]);
+                cam.SetRadius(oldValues[2]);
 
                 cameraController.gCamera.UpdatePosition();
+
+                editor.TurnOff();
             }
         }
 
         void Start()
         {
-            //SetObserverCam();
-
             appartment = Master.GetInstance().GetCurrent();
             if (appartment == null)
             {
                 Menu();
             }
 
-            GenerateCubes();
+            layout = CreateLayout();
+            layout.UpdatePositions();
+
+            editor.SetLayout(layout);
         }
 
         void Update()
@@ -71,51 +81,40 @@ namespace HomeBuilder.Designing
             
         }
 
-        void GenerateCubes()
+        Layout CreateLayout()
         {
             if (!appartment.IsAllSet())
             {
                 Master.GetInstance().designer.evaluate(appartment);
-            } 
+            }
 
             cubes = new List<Cube>();
             ModuleInfo[] modules = appartment.GetModules();
             for (int i = 0; i < modules.Length; i++)
             {
-                cubes.Add( GetCube(modules[i].GetSize()[0], modules[i].GetSize()[1], modules[i].GetPosition()[0], modules[i].GetPosition()[1], modules[i].GetParams().color) );
+                cubes.Add(GetCube(modules[i].GetParams().color));
             }
+
+            return new Layout(appartment, cubes.ToArray(), modules);
         }
 
-        Cube GetCube(float w, float h, float x, float y, Color color)
+        void OnDestroy()
+        {
+            layout.Destory();
+        }
+
+        Cube GetCube(Color color)
         {
             GameObject obj = Instantiate(Resources.Load(Assets.GetInstance().prefabs.cube), mainTransform) as GameObject;
 
-            float width     = appartment.GetSize()[0];
-            float height    = appartment.GetSize()[1];
-
             Cube cube = obj.GetComponent<Cube>();
-            cube.SetSize(w, h);
-            cube.SetPosition(-width / 2f + x + w / 2f, -height / 2f + y + h / 2f);
+            cube.SetSize(1, 1);
+            cube.SetPosition(0, 0);
 
             obj.GetComponent<MeshRenderer>().material.color = color;
 
             return cube;
         }
-
-        //void SetObserverCam()
-        //{
-        //    Camera cam = GetComponentInChildren<Camera>();
-
-        //    cam.transform.localPosition = new Vector3(-5, 6, -5);
-        //    cam.transform.LookAt(mainTransform.position);
-        //}
-
-        //void EditCam()
-        //{
-        //    Camera cam = GetComponentInChildren<Camera>();
-
-        //    cam.transform.localPosition = new Vector3(0, 10, 0);
-        //    cam.transform.LookAt(mainTransform.position);
-        //}
+        
     }
 }

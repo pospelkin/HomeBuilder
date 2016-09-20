@@ -84,6 +84,7 @@ namespace HomeBuilder.Questioning
                 Configuration.Appartment.ModuleParams p = Configuration.Appartment.approvedModules[i];
                 GameObject obj = Instantiate(Resources.Load(Assets.GetInstance().prefabs.moduleS), content) as GameObject;
                 obj.transform.localScale = new Vector3(1, 1, 1);
+                obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, 0);
 
                 modules[i] = obj.GetComponent<Module>();
                 modules[i].SetModulerAndParams(this, p);

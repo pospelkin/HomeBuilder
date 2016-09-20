@@ -60,7 +60,7 @@ namespace HomeBuilder.Core
             module.SetSize(minWidth, minHeight);
         }
 
-        void createSheme(ModuleInfo[] modules, Appartment appartment, float spareSq = 0)
+        public void createSheme(ModuleInfo[] modules, Appartment appartment, float spareSq = 0)
         {
             float width     = Mathf.Sqrt(appartment.GetSquare());
             float height    = width;
@@ -160,7 +160,7 @@ namespace HomeBuilder.Core
         static public Appartment GetRandomAppartment()
         {
             Appartment res = new Appartment("Random Appartmanrt", 0);
-            res.SetSquare(100);
+            res.SetSquare(200);
             res.SetStyle(Configuration.Appartment.Styles.MODERN);
 
             ModuleInfo kitchen = new ModuleInfo("Kitchen");
@@ -177,8 +177,24 @@ namespace HomeBuilder.Core
             bathroom.SetPosition(0, 5);
             bathroom.SetParams(Configuration.Appartment.approvedModules[1]);
 
+            ModuleInfo kitchen2 = new ModuleInfo("Kitchen");
+            kitchen2.SetStyle(Configuration.Appartment.Styles.MODERN);
+            kitchen2.SetSquare(50);
+            kitchen2.SetSize(10, 5);
+            kitchen2.SetPosition(0, 0);
+            kitchen2.SetParams(Configuration.Appartment.approvedModules[0]);
+
+            ModuleInfo bathroom2 = new ModuleInfo("Bathroom");
+            bathroom2.SetStyle(Configuration.Appartment.Styles.CLASSIC);
+            bathroom2.SetSquare(50);
+            bathroom2.SetSize(10, 5);
+            bathroom2.SetPosition(0, 5);
+            bathroom2.SetParams(Configuration.Appartment.approvedModules[1]);
+
             res.AddModule(kitchen);
             res.AddModule(bathroom);
+            res.AddModule(kitchen2);
+            res.AddModule(bathroom2);
 
             res.SetSize(10,10);
 

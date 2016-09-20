@@ -16,5 +16,10 @@ namespace HomeBuilder.Designing
             transform.localPosition = new Vector3(x, 0, y);
         }
 
+        public Vector3 GetSize()
+        {
+            return GetComponent<MeshRenderer>().bounds.size;
+        }
+
     }
 }

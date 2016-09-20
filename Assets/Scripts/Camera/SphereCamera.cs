@@ -53,7 +53,7 @@ namespace HomeBuilder
         public void Reset()
         {
             setCenterPoint(x0, y0, z0);
-            setRadius(r0);
+            SetRadius(r0);
             SetPhi(phi0);
             SetTita(tita0);
 
@@ -111,12 +111,17 @@ namespace HomeBuilder
             return tita;
         }
 
-        public void setRadius(float nr)
+        public void SetRadius(float nr)
         {
             if (nr < rMin || nr > rMax)
                 return;
 
             r = nr;
+        }
+
+        public float GetRadius()
+        {
+            return r;
         }
 
         private void setCenterPoint(float nx, float ny, float nz)
@@ -138,7 +143,7 @@ namespace HomeBuilder
 
         public void Zoom(float dr)
         {
-            setRadius(r + dr);
+            SetRadius(r + dr);
         }
 
         public void RotateVertical(float d)

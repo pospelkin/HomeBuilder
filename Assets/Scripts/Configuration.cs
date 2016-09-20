@@ -19,7 +19,8 @@ namespace HomeBuilder
 
         public class Appartment
         {
-            readonly static public int minSquare = 10;
+            readonly static public int minSquare = 50;
+            readonly static public int maxSquare = 350;
             readonly static public int maxModuleOfType = 2;
 
             public enum Styles { MODERN, CLASSIC, OLD }
@@ -39,9 +40,9 @@ namespace HomeBuilder
             }
 
             readonly static public ModuleParams[] approvedModules = new ModuleParams[] {
-                new ModuleParams("Kichen"   , 8,    2, 4, Color.red),
+                new ModuleParams("Kitchen"   , 8,    2, 4, Color.red),
                 new ModuleParams("Bathroom" , 6,    2, 3, Color.green),
-                new ModuleParams("GuestRoom", 12,   3, 4, Color.blue),
+                new ModuleParams("Hall", 12,   3, 4, Color.blue),
                 new ModuleParams("Bedroom"  , 16,   4, 4, Color.gray)
             };
 

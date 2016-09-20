@@ -64,13 +64,38 @@ namespace HomeBuilder.Questioning
             return (int) sizeSlider.value;
         }
 
-        public void SetStyles()
+        public void SetStyles(string module = "")
         {
             styles = new List<Style>();
 
-            styles.Add(new Style(Configuration.Appartment.Styles.MODERN, Resources.Load<Sprite>(Assets.GetInstance().sprites.styleModern)));
-            styles.Add(new Style(Configuration.Appartment.Styles.CLASSIC, Resources.Load<Sprite>(Assets.GetInstance().sprites.styleClassic)));
-            styles.Add(new Style(Configuration.Appartment.Styles.OLD, Resources.Load<Sprite>(Assets.GetInstance().sprites.styleOld)));
+            switch (module)
+            {
+                case "Kitchen":
+                    styles.Add(new Style(Configuration.Appartment.Styles.MODERN, Resources.Load<Sprite>(Assets.GetInstance().sprites.kitchenStyleModern)));
+                    styles.Add(new Style(Configuration.Appartment.Styles.CLASSIC, Resources.Load<Sprite>(Assets.GetInstance().sprites.kitchenStyleClassic)));
+                    styles.Add(new Style(Configuration.Appartment.Styles.OLD, Resources.Load<Sprite>(Assets.GetInstance().sprites.kitchenStyleOld)));
+                    break;
+                case "Bathroom":
+                    styles.Add(new Style(Configuration.Appartment.Styles.MODERN, Resources.Load<Sprite>(Assets.GetInstance().sprites.bathroomStyleModern)));
+                    styles.Add(new Style(Configuration.Appartment.Styles.CLASSIC, Resources.Load<Sprite>(Assets.GetInstance().sprites.bathroomStyleClassic)));
+                    styles.Add(new Style(Configuration.Appartment.Styles.OLD, Resources.Load<Sprite>(Assets.GetInstance().sprites.bathroomStyleOld)));
+                    break;
+                case "Bedroom":
+                    styles.Add(new Style(Configuration.Appartment.Styles.MODERN, Resources.Load<Sprite>(Assets.GetInstance().sprites.bedroomStyleModern)));
+                    styles.Add(new Style(Configuration.Appartment.Styles.CLASSIC, Resources.Load<Sprite>(Assets.GetInstance().sprites.bedroomStyleClassic)));
+                    styles.Add(new Style(Configuration.Appartment.Styles.OLD, Resources.Load<Sprite>(Assets.GetInstance().sprites.bedroomStyleOld)));
+                    break;
+                case "Hall":
+                    styles.Add(new Style(Configuration.Appartment.Styles.MODERN, Resources.Load<Sprite>(Assets.GetInstance().sprites.hallStyleModern)));
+                    styles.Add(new Style(Configuration.Appartment.Styles.CLASSIC, Resources.Load<Sprite>(Assets.GetInstance().sprites.hallStyleClassic)));
+                    styles.Add(new Style(Configuration.Appartment.Styles.OLD, Resources.Load<Sprite>(Assets.GetInstance().sprites.hallStyleOld)));
+                    break;
+                default:
+                    styles.Add(new Style(Configuration.Appartment.Styles.MODERN, Resources.Load<Sprite>(Assets.GetInstance().sprites.styleModern)));
+                    styles.Add(new Style(Configuration.Appartment.Styles.CLASSIC, Resources.Load<Sprite>(Assets.GetInstance().sprites.styleClassic)));
+                    styles.Add(new Style(Configuration.Appartment.Styles.OLD, Resources.Load<Sprite>(Assets.GetInstance().sprites.styleOld)));
+                    break;
+            }
 
             SetStyle(current);
             UpdateButtons();

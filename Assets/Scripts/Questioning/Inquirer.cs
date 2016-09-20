@@ -100,7 +100,7 @@ namespace HomeBuilder.Questioning
 
             caption.text = "Home Style";
             styler.SetStyles();
-            styler.SetMinMax(10, 100);
+            styler.SetMinMax(Configuration.Appartment.minSquare, Configuration.Appartment.maxSquare);
         }
 
         void StartModuler()
@@ -123,8 +123,8 @@ namespace HomeBuilder.Questioning
 
             TurnOn(stylerOnly.gameObject);
 
-            stylerOnly.SetStyles();
-            caption.text = "Module Style #" + index;
+            stylerOnly.SetStyles(modules[index].GetName());
+            caption.text = "Module Style: " + modules[index].GetName();
         }
 
         bool IsReadyToProceed()
