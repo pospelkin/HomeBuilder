@@ -22,19 +22,25 @@ namespace HomeBuilder.Designing
 
             float lastRow = modules.Length % cols;
             List<Rect>[] levels = null;
-            //if (lastRow == 0)
-            //{
-            //    levels = GetDefaultScheme(appartment);
-            //}
-            //else
-            //{
-                levels = GetScheme1(appartment);
-            //}
+
+            levels = GetScheme1(appartment);
 
             float[] size = GetAppSize(levels);
             appartment.SetSize(size[0], size[1]);
 
+            Rect[][] res = new Rect[levels.Length][];
+            for (int i = 0; i < res.Length; i++)
+            {
+                res[i] = levels[i].ToArray();
+            }
+            lastRes = res;
+            return res;
+        }
 
+        public Rect[][] FixOnline(Appartment appartment, List<Rect>[] levels, float[] spares)
+        {
+            levels = FixScheme(appartment, levels, spares);
+           
             Rect[][] res = new Rect[levels.Length][];
             for (int i = 0; i < res.Length; i++)
             {
@@ -108,7 +114,6 @@ namespace HomeBuilder.Designing
                 cols = defCols + 1;
                 rows--;
             }
-
 
             width   = Mathf.RoundToInt(Mathf.Sqrt(appartment.GetSquare()));
             height  = width;
@@ -244,6 +249,85 @@ namespace HomeBuilder.Designing
             }
 
             return levels;
+        }
+
+        List<Rect>[] FixScheme(Appartment appartment, List<Rect>[] rLevels, float[] spares)
+        {
+            ModuleInfo[] modules = appartment.GetModules();
+
+            float maxWidth = 0;
+            for (int i = 0; i < rLevels.Length; i++)
+            {
+                float rowWidth = 0;
+                for (int j = 0; j < rLevels[i].Count; j++)
+                {
+                    rowWidth += rLevels[i][j].width;
+                }
+
+                maxWidth = Mathf.Max(maxWidth, rowWidth);
+            }
+
+            List<Rect>[] levels = new List<Rect>[rLevels.Length];
+            int totalCount = 0;
+            for (int i = 0; i < levels.Length; i++)
+            {
+                levels[i] = new List<Rect>();
+                int end = rLevels[i].Count;
+
+                float spareForRow = spares[i];
+                if (spareForRow == 0)
+                {
+                    levels[i].AddRange(rLevels[i]);
+                    totalCount += rLevels[i].Count;
+
+                    continue;
+                }
+
+                float rowWidth = 0;
+                for (int k = 0; k < end; k++)
+                {
+                    rowWidth += rLevels[i][k].width;
+                }
+                float rowHeight = rLevels[i][0].height;
+
+                float newRowHeight = rowHeight;
+                float newRowWidth = rowWidth;
+                float spareForCol = spareForRow / end;
+                float spareWidthForCol = spareForCol / rowHeight;
+
+                float cWidth = 0;
+                float cHeight = 0;
+
+                newRowWidth     = maxWidth;
+                newRowHeight    = (rowHeight * rowWidth + spareForRow) / newRowWidth;
+
+                cWidth = newRowWidth / end;
+                cHeight = newRowHeight;
+
+                for (int j = 0; j < end; j++)
+                {
+                    ModuleInfo module = modules[totalCount];
+
+                    float h = cHeight;
+                    float w = cWidth;
+
+                    Rect rect = GetRectForModule(module, w, h, levels[i], i > 0 ? levels[i - 1] : null);
+
+                    module.SetSize(rect.width, rect.height);
+                    module.SetPosition(rect.x, rect.y);
+
+                    levels[i].Add(rect);
+
+                    totalCount++;
+                }
+            }
+
+            return levels;
+        }
+
+        List<Rect>[] FixScheme1(Appartment appartment)
+        {
+            return new List<Rect>[1];
         }
 
         Rect GetRectForModule(ModuleInfo module, float w, float h, List<Rect> level, List<Rect> upperLevel = null)

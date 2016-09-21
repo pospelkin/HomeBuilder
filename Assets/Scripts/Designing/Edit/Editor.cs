@@ -196,8 +196,12 @@ namespace HomeBuilder.Designing
 
         bool AllowChange(PlanRoom p1, PlanRoom p2)
         {
-            if (p1.layoutElement.GetSize().x == p2.layoutElement.GetSize().x) return true;
-            if (p1.layoutElement.GetSize().y == p2.layoutElement.GetSize().y) return true;
+            if (p1.layoutElement.GetPosition().x == p2.layoutElement.GetPosition().x
+                && p1.layoutElement.GetSize().x == p2.layoutElement.GetSize().x) return true;
+            if (p1.layoutElement.GetPosition().y == p2.layoutElement.GetPosition().y
+                && p1.layoutElement.GetSize().y == p2.layoutElement.GetSize().y) return true;
+            if (p1.layoutElement.GetSize().x == p2.layoutElement.GetSize().x
+                && p1.layoutElement.GetSize().y == p2.layoutElement.GetSize().y) return true;
             return false;
         }
 
@@ -297,9 +301,11 @@ namespace HomeBuilder.Designing
         {
             if (plans.Count <= 1) return;
 
-            plans.Remove(plan);
-            MonoBehaviour.Destroy(plan.gameObject);
-            layout.Remove(plan.layoutElement);
+            if (layout.Remove(plan.layoutElement))
+            {
+                plans.Remove(plan);
+                MonoBehaviour.Destroy(plan.gameObject);
+            }
         }
 
         void OnDestroy()

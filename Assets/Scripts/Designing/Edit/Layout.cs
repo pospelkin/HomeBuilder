@@ -25,13 +25,12 @@ namespace HomeBuilder.Designing
             appartment  = ap;
             this.cubes  = cubes;
 
+            fixer.Fix(appartment);
             Restart(appartment, cubes, infos);
         }
 
         void Restart(Appartment ap, Cube[] cubes, ModuleInfo[] infos)
         {
-            fixer.Fix(appartment);
-
             List<LayoutElement> elems = elements;
             if (elems == null)
             {
@@ -92,9 +91,6 @@ namespace HomeBuilder.Designing
                 } 
                 cubes = cs.ToArray();
             }
-
-            FixLayout(null, true);
-            UpdatePositions();
 
             FixLayout();
             UpdatePositions();
@@ -637,8 +633,34 @@ namespace HomeBuilder.Designing
             return false;
         }
 
-        public void Remove(LayoutElement element)
+        public bool Remove(LayoutElement element)
         {
+            int x = 0, y = 0;
+
+            float[] spares = new float[eMatrix.Length];
+            for (int i = 0; i < eMatrix.Length; i++)
+            {
+                spares[i] = 0;
+                for (int j = 0; j < eMatrix[i].Length; j++)
+                {
+                    if (eMatrix[i][j] == element)
+                    {
+                        x = i;
+                        y = j;
+
+                        spares[i] = rMatrix[i][j].width * rMatrix[i][j].height;
+                    }
+                }
+            }
+
+            for (int j = 0; j < rMatrix[x].Length; j++)
+            {
+                if (rMatrix[x][j].y != rMatrix[x][0].y || rMatrix[x][j].height != rMatrix[x][0].height)
+                {
+                    return false;
+                }
+            }
+
             List<Cube> cs = new List<Cube>();
             for (int i = 0; i < cubes.Length; i++)
             {
@@ -648,24 +670,70 @@ namespace HomeBuilder.Designing
                 }
             }
             cubes = cs.ToArray();
+
+            int toDelete = -1;
+
+            List<Rect>[] list = new List<Rect>[rMatrix.Length];
+            for (int i = 0; i < list.Length; i++)
+            {
+                list[i] = new List<Rect>();
+                for (int j = 0; j < rMatrix[i].Length; j++)
+                {
+                    if (eMatrix[i][j] != element)
+                    {
+                        list[i].Add(rMatrix[i][j]);
+                    }
+                }
+
+                if (list[i].Count == 0)
+                {
+                    toDelete = i;
+                }
+            }
+
+            if (toDelete >= 0)
+            {
+                return false;
+                //float[] spares2 = new float[rMatrix.Length - 1];
+                //int c = 0;
+                //for (int i = 0; i < spares.Length; i++)
+                //{
+                //    if (i == toDelete) continue;
+                //    if (c == 0)
+                //    {
+                //        spares2[c] = spares[toDelete];
+                //    } else
+                //    {
+                //        spares2[c] = spares[i];
+                //    }
+                //    c++;
+                //}
+                //List<Rect>[] list2 = new List<Rect>[rMatrix.Length - 1];
+                //c = 0;
+                //for (int i = 0; i < list.Length; i++)
+                //{
+                //    if (i != toDelete)
+                //    {
+                //        list2[c] = list[i];
+                //        c++;
+                //    }
+                //}
+                //list = new List<Rect>[list2.Length];
+                //list = list2;
+            }
+
             MonoBehaviour.Destroy(element.cube.gameObject);
 
             elements.Remove(element);
 
             appartment.RemoveModule(element.info);
 
-            //Master.GetInstance().designer.evaluate(appartment);
-
-            //ModuleInfo[] modules = appartment.GetModules();
-            //Restart(appartment, cubes, modules);
-
-            FixLayout(null, true);
-            UpdatePositions();
-
-            FixLayout();
-            UpdatePositions();
+            fixer.FixOnline(appartment, list, spares);
+            Restart(appartment, cubes, appartment.GetModules());
 
             if (onChange != null) onChange();
+
+            return true;
         }
 
         public void Apply()
