@@ -22,14 +22,14 @@ namespace HomeBuilder.Designing
 
             float lastRow = modules.Length % cols;
             List<Rect>[] levels = null;
-            if (lastRow == 0)
-            {
-                levels = GetDefaultScheme(appartment);
-            }
-            else
-            {
+            //if (lastRow == 0)
+            //{
+            //    levels = GetDefaultScheme(appartment);
+            //}
+            //else
+            //{
                 levels = GetScheme1(appartment);
-            }
+            //}
 
             float[] size = GetAppSize(levels);
             appartment.SetSize(size[0], size[1]);
@@ -127,7 +127,7 @@ namespace HomeBuilder.Designing
                 if (lastRow == 1)
                 {
                     end = i == rows - 1 ? cols : defCols;
-                } else
+                } else if (lastRow != 0)
                 {
                     end = i == rows - 1 ? (int) lastRow : defCols;
                 }
