@@ -108,6 +108,11 @@ namespace HomeBuilder.Designing
             GetComponent<Image>().color = Color.green;
         }
 
+        public void MarkRed()
+        {
+            GetComponent<Image>().color = Color.red;
+        }
+
         public void UnMark()
         {
             GetComponent<Image>().color = Color.white;

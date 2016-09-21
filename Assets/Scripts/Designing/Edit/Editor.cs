@@ -167,38 +167,49 @@ namespace HomeBuilder.Designing
                     plans[i] != plan
                     && IsNear(plans[i],
                         movePlan
-                        )
+                        ) && AllowChange(plan, plans[i])
                         )
                 {
                     changedFlag = true;
                     changed = plans[i];
-                    changedPos = movePlan.rectTransform.anchoredPosition + movePlan.rectTransform.sizeDelta / 2;
+                    changedPos = movePlan.rectTransform.anchoredPosition/* + movePlan.rectTransform.sizeDelta / 2*/;
                     Debug.Log("Interchange ready");
                     plan.Mark();
+                    movePlan.UnMark();
                     Interchange(plan, changed);
                     break;
                 }
             }
             if (!changedFlag)
             {
-                if (changed != null && !IsNear(movePlan, plan) && !IsNear(movePlan, changedPos))
+                if (changed != null && !IsNear(movePlan, plan) && !IsNear(movePlan, changedPos) )
                 {
+                    movePlan.UnMark();
                     plan.UnMark();
                     Interchange(plan, changed);
                     changed = null;
                 }
             }
+
+            if (changed == null) movePlan.MarkRed();
+        }
+
+        bool AllowChange(PlanRoom p1, PlanRoom p2)
+        {
+            if (p1.layoutElement.GetSize().x == p2.layoutElement.GetSize().x) return true;
+            if (p1.layoutElement.GetSize().y == p2.layoutElement.GetSize().y) return true;
+            return false;
         }
 
         bool IsNear(PlanRoom p1, PlanRoom p2)
         {
-            return IsNear(p1, p2.rectTransform.anchoredPosition + p2.rectTransform.sizeDelta / 2);
+            return IsNear(p1, p2.rectTransform.anchoredPosition/* + p2.rectTransform.sizeDelta / 2*/);
         }
 
         bool IsNear(PlanRoom p1, Vector2 p2)
         {
             return Vector2.Distance(
-                        p1.rectTransform.anchoredPosition + p1.rectTransform.sizeDelta / 2,
+                        p1.rectTransform.anchoredPosition/* + p1.rectTransform.sizeDelta / 2*/,
                         p2
                         ) < Mathf.Min(p1.rectTransform.sizeDelta.x, p1.rectTransform.sizeDelta.y) / 3;
         }
@@ -223,10 +234,41 @@ namespace HomeBuilder.Designing
             changed     = null;
         }
 
+
+
+        Dictionary<PlanRoom, Vector2> dictionary = new Dictionary<PlanRoom, Vector2>();
         void OnResize(PlanRoom plan, Vector2 change)
         {
+            if (!dictionary.ContainsKey(plan))
+            {
+                dictionary.Add(plan, new Vector2(0,0));
+            }
+            Vector2 v = dictionary[plan];
+
+            v.x += change.x;
+            v.y += change.y;
+
             Vector2 oldSize = plan.layoutElement.GetSize();
-            plan.layoutElement.SetSize(oldSize.x + change.x / coef, oldSize.y + change.y / coef);
+            float xChange = v.x / coef,
+                yChange = v.y / coef;
+            if (Mathf.Abs( xChange ) > 1 && Mathf.Abs( yChange )> 1)
+            {
+                plan.layoutElement.SetSize(oldSize.x + xChange, oldSize.y + yChange);
+
+                v.y = 0;
+                v.x = 0;
+            } else if (Mathf.Abs( xChange ) > 1)
+            {
+                plan.layoutElement.SetSize(oldSize.x + xChange, oldSize.y);
+                v.x = 0;
+            }
+            else if (Mathf.Abs( yChange ) > 1)
+            {
+                plan.layoutElement.SetSize(oldSize.x, oldSize.y + yChange);
+                v.y = 0;
+            }
+            dictionary[plan] = v;
+
         }
 
         void UpdateAll()

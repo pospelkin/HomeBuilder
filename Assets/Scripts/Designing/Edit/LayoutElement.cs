@@ -50,6 +50,10 @@ namespace HomeBuilder.Designing
 
         public void SetSize(float w, float h, bool force = false)
         {
+
+            w = Mathf.RoundToInt(w);
+            h = Mathf.RoundToInt(h);
+
             if (force)
             {
                 width   = w;
@@ -58,9 +62,6 @@ namespace HomeBuilder.Designing
             {
                 float tW = width,
                     tH = height;
-
-                //w = Mathf.RoundToInt(w);
-                //h = Mathf.RoundToInt(h);
 
                 if (w >= mWidth)
                 {

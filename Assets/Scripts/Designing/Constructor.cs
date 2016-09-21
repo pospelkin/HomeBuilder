@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using HomeBuilder.Core;
 using UnityEngine.SceneManagement;
@@ -12,6 +13,7 @@ namespace HomeBuilder.Designing
         public GCameraController cameraController;
         public Transform mainTransform;
         public Editor editor;
+        public Button toggler;
 
         float[] oldValues = new float[] { 0, 0, 0 };
 
@@ -26,6 +28,7 @@ namespace HomeBuilder.Designing
 
         public void Save()
         {
+            layout.Apply();
             Master.GetInstance().history.Save(appartment.GetName(), appartment);
         }
 
@@ -48,6 +51,7 @@ namespace HomeBuilder.Designing
                 cameraController.gCamera.UpdatePosition();
 
                 editor.TurnOn();
+                toggler.GetComponentInChildren<Text>().text = "View";
             } else
             {
                 SphereCamera cam = (SphereCamera)cameraController.gCamera;
@@ -59,6 +63,7 @@ namespace HomeBuilder.Designing
                 cameraController.gCamera.UpdatePosition();
 
                 editor.TurnOff();
+                toggler.GetComponentInChildren<Text>().text = "Modify";
             }
         }
 

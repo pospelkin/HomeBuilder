@@ -8,7 +8,7 @@ namespace HomeBuilder.Designing
 
         public void SetSize(float w, float h)
         {
-            transform.localScale = new Vector3(w, 1, h);
+            transform.localScale = new Vector3(w, 5, h);
         }
 
         public void SetPosition(float x, float y)

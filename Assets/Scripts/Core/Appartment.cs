@@ -72,9 +72,27 @@ namespace HomeBuilder.Core
             modules.Add(moduleInfo);
         }
 
+        public void RemoveModule(ModuleInfo moduleInfo)
+        {
+            modules.Remove(moduleInfo);
+        }
+
         public ModuleInfo[] GetModules()
         {
             return modules.ToArray();
+        }
+
+        public void Interchange(ModuleInfo m1, ModuleInfo m2)
+        {
+            int i1 = modules.IndexOf(m1);
+            int i2 = modules.IndexOf(m2);
+
+            if (i1 >= 0 && i2 >= 0 && i1 != i2)
+            {
+                ModuleInfo temp = modules[i1];
+                modules[i1] = modules[i2];
+                modules[i2] = temp;
+            }
         }
 
         public bool IsAllSet()

@@ -13,18 +13,35 @@ namespace HomeBuilder.Designing
         readonly public float square;
         List<LayoutElement> elements;
         LayoutElement[][] eMatrix;
-        Rect[][] rMatrix; 
+        Rect[][] rMatrix;
+        Cube[] cubes;
 
         Appartment appartment;
 
         public Layout(Appartment ap, Cube[] cubes, ModuleInfo[] infos)
         {
             appartment  = ap;
+            this.cubes = cubes;
 
-            List<LayoutElement> elems = new List<LayoutElement>();
+            Restart(appartment, cubes, infos);
+        }
+
+        void Restart(Appartment ap, Cube[] cubes, ModuleInfo[] infos)
+        {
+            List<LayoutElement> elems = elements;
+            if (elems == null)
+            {
+                elems = new List<LayoutElement>();
+            }
             for (int i = 0; i < infos.Length; i++)
             {
-                LayoutElement elem = new LayoutElement(cubes[i], infos[i], this);
+                LayoutElement elem;
+                if (i < elems.Count) {
+                    elem = elems[i];
+                } else
+                {
+                    elem = new LayoutElement(cubes[i], infos[i], this);
+                }
                 elem.SetMinParams(
                     infos[i].GetParams().minWidth,
                     infos[i].GetParams().minHeight,
@@ -44,20 +61,46 @@ namespace HomeBuilder.Designing
 
         public void Interchange(LayoutElement l1, LayoutElement l2)
         {
+            appartment.Interchange(l1.info, l2.info);
+
             int i1 = elements.IndexOf(l1);
             int i2 = elements.IndexOf(l2);
 
-            if (i1 >= 0 && i2 >=0  && i1 != i2)
+            if (i1 >= 0 && i2 >= 0 && i1 != i2)
             {
                 LayoutElement temp = elements[i1];
                 elements[i1] = elements[i2];
                 elements[i2] = temp;
 
-                FixLayout();
-                UpdatePositions();
-
-                if (onChange != null) onChange();
+                List<Cube> cs = new List<Cube>();
+                for (int i = 0; i < cubes.Length; i++)
+                {
+                    if (i == i1)
+                    {
+                        cs.Add(cubes[i2]);
+                    } else if (i == i2)
+                    {
+                        cs.Add(cubes[i1]);
+                    } else
+                    {
+                        cs.Add(cubes[i]);
+                    }
+                } 
+                cubes = cs.ToArray();
             }
+
+            FixLayout(null, true);
+            UpdatePositions();
+
+            FixLayout();
+            UpdatePositions();
+
+            //Master.GetInstance().designer.evaluate(appartment);
+
+            //ModuleInfo[] modules = appartment.GetModules();
+            //Restart(appartment, cubes, modules);
+
+            if (onChange != null) onChange();
         }
 
         public void Destory()
@@ -86,13 +129,13 @@ namespace HomeBuilder.Designing
             return appartment.GetSquare();
         }
 
-        public float GetElemetsSquare()
+        public float GetElemetsSquare(bool min = false)
         {
             LayoutElement[] els = GetElements();
             float sq = 0;
             for (int i = 0; i < els.Length; i++)
             {
-                sq += els[i].GetSquare();
+                sq += min ? els[i].mSquare : els[i].GetSquare();
             }
             return sq;
         }
@@ -139,9 +182,9 @@ namespace HomeBuilder.Designing
             if (onChange != null) onChange();
         }
 
-        float GetSpareSquare()
+        float GetSpareSquare(bool min = false)
         {
-            return GetSquare() - GetElemetsSquare();
+            return GetSquare() - GetElemetsSquare(min);
         }
 
         float GetMinSquare()
@@ -175,13 +218,29 @@ namespace HomeBuilder.Designing
                 }
             }
 
+            if (newWidth < el.mWidth || newHeight < el.mHeight)
+            {
+                Debug.Log("CATCHED");
+                return;
+            }
+
             if (height != newHeight)
             {
                 float change = newHeight - height;
-                if (change <= GetSpareHeight(x, y) && HeightChangeAllowed(x, y))
+
+                bool[][] involved = GetBoolMatrix(GetAllElementsInvolvedInHeightChange(x, y).ToArray());
+
+                float spareInRow = GetSpareInRow(x, involved[x]);
+                if (change < 0 && spareInRow < Mathf.Abs(change))
                 {
-                    float changed = CompensateHeight(x, y, change);
-                    el.SetSize(width, height + changed, true);
+                    change = -spareInRow;
+                }
+
+                if (change <= GetSpareHeight(x, y, involved) /*&& HeightChangeAllowed(x, y)*/)
+                {
+                    float changed = CompensateHeight(x, y, change, involved);
+
+                    ChangeHeightInvolved(x, y, involved, changed);
                 }
             }
 
@@ -191,10 +250,20 @@ namespace HomeBuilder.Designing
             if (width != newWidth)
             {
                 float change = newWidth - width;
-                if (change <= GetSpareWidth(x, y) && WidthChangeAllowed(x, y))
+
+                bool[][] involved = GetBoolMatrix(GetAllElementsInvolvedInWidthChange(x, y).ToArray());
+
+                float spareInCol = GetSpareInCol(y, involved);
+                if (change < 0 && spareInCol < Mathf.Abs( change ) )
                 {
-                    float changed = CompensateWidth(x, y, change);
-                    el.SetSize(width + changed, height, true);
+                    change = -spareInCol;
+                }
+
+                if (change <= GetSpareWidth(x, y, involved) && WidthChangeAllowed(x, y))
+                {
+                    float changed = CompensateWidth(x, y, change, involved);
+
+                    ChangeWidthInvolved(x, y, involved, changed);
                 }
             }
 
@@ -205,6 +274,28 @@ namespace HomeBuilder.Designing
 
         }
 
+        void ChangeHeightInvolved(int x, int y, bool[][] involved, float changed)
+        {
+            for (int j = 0; j < involved[x].Length; j++)
+            {
+                if (involved[x][j])
+                {
+                    eMatrix[x][j].SetSize(rMatrix[x][j].width, rMatrix[x][j].height + changed, true);
+                }
+            }
+        }
+
+        void ChangeWidthInvolved(int x, int y, bool[][] involved, float changed)
+        {
+            for (int j = 0; j < rMatrix.Length; j++)
+            {
+                if (y < involved[j].Length && involved[j][y])
+                {
+                    eMatrix[j][y].SetSize(rMatrix[j][y].width + changed, rMatrix[j][y].height, true);
+                }
+            }
+        }
+
         bool HeightChangeAllowed(int x, int y)
         {
             for (int i = x - 1; i <= x + 1; i++)
@@ -213,7 +304,7 @@ namespace HomeBuilder.Designing
 
                 if (rMatrix[x][y].width != rMatrix[i][y].width)
                 {
-                    return false;
+                    return true;
                 }
             }
             return true;
@@ -227,80 +318,324 @@ namespace HomeBuilder.Designing
 
                 if (rMatrix[x][y].height != rMatrix[x][i].height)
                 {
-                    return false;
+                    return true;
                 }
             }
             return true;
         }
 
-        float GetSpareWidth(int x, int y)
+        float GetSpareWidth(int x, int y, bool[][] involved)
         {
             float spare = 0;
+            //for (int i = y - 1; i <= y + 1; i++)
+            //{
+            //    if (i == y || i < 0 || i >= rMatrix[x].Length) continue;
+
+            //    if (rMatrix[x][y].height == rMatrix[x][i].height)
+            //    {
+            //        spare += (rMatrix[x][i].width - eMatrix[x][i].mWidth);
+            //    } else {
+
+            //    }
+            //}
+            
+            for (int i = 0; i < rMatrix[x].Length; i++)
+            {
+                if (i == y) continue;
+
+                spare += GetSpareInCol(i, involved);
+            }
+
+            return spare;
+        }
+
+        float GetSpareHeight(int x, int y, bool[][] involved)
+        {
+            float spare = 0;
+            
+            //for (int i = x - 1; i <= x + 1; i++)
+            //{
+            //    if (i == x || i < 0 || i >= rMatrix.Length) continue;
+
+            //    if (rMatrix[x][y].width == rMatrix[i][y].width)
+            //    {
+            //        spare += (rMatrix[i][y].height - eMatrix[i][y].mHeight);
+            //    }
+            //}
+
+            for (int i = 0; i < rMatrix.Length; i++)
+            {
+                if (i == x) continue;
+
+                spare += GetSpareInRow(i, involved[i]);
+            }
+
+            return spare;
+        }
+
+        float GetSpareInRow(int i, bool[] involved)
+        {
+            float spareInRow = float.PositiveInfinity;
+            for (int j = 0; j < rMatrix[i].Length; j++)
+            {
+                if (involved[j])
+                {
+                    spareInRow = Mathf.Min(spareInRow, rMatrix[i][j].height - eMatrix[i][j].mHeight);
+                }
+            }
+            return spareInRow;
+        }
+
+        float GetSpareInCol(int i, bool[][] involved)
+        {
+            float spareInCol = float.PositiveInfinity;
+            for (int j = 0; j < rMatrix.Length; j++)
+            {
+                if (i < involved[j].Length && involved[j][i])
+                {
+                    spareInCol = Mathf.Min(spareInCol, rMatrix[j][i].width - eMatrix[j][i].mWidth);
+                }
+            }
+
+            return spareInCol;
+        }
+        
+
+        float CompensateHeight(int x, int y, float value, bool[][] involved)
+        {
+            float left = value;
+            //for (int i = x - 1; i <= x + 1; i++)
+            //{
+            //    if (i == x || i < 0 || i >= rMatrix.Length) continue;
+
+            //    float newHeight = Mathf.Max(eMatrix[i][y].mHeight, rMatrix[i][y].height - left);
+            //    eMatrix[i][y].SetSize(rMatrix[i][y].width, newHeight, true);
+            //    left -= (rMatrix[i][y].height - newHeight);
+            //}
+
+            for (int i = 0; i < rMatrix.Length; i++)
+            {
+                if (i == x) continue;
+
+                float available = GetSpareInRow(i, involved[i]);
+                float used      = Mathf.Min(left, available);
+                bool reallyUsed = false;
+                for (int j = 0; j < rMatrix[i].Length; j++)
+                {
+                    if (involved[i][j])
+                    {
+                        reallyUsed = true;
+                        float newHeight = Mathf.Max(eMatrix[i][j].mHeight, rMatrix[i][j].height - used);
+                        eMatrix[i][j].SetSize(rMatrix[i][j].width, newHeight, true);
+                    }
+                }
+                if (reallyUsed)
+                {
+                    left -= used;
+                }
+            }
+
+            return value - left;
+        }
+
+        float CompensateWidth(int x, int y, float value, bool[][] involved)
+        {
+            float left = value;
+            //for (int i = y - 1; i <= y + 1; i++)
+            //{
+            //    if (i == y || i < 0 || i >= rMatrix[x].Length) continue;
+
+            //    float newWidth = Mathf.Max(eMatrix[x][i].mWidth, rMatrix[x][i].width - left);
+            //    eMatrix[x][i].SetSize(newWidth, rMatrix[x][i].height, true);
+            //    left -= (rMatrix[x][i].width - newWidth);
+            //}
+
+            //for (int i = 0; i < rMatrix.Length; i++)
+            //{
+                for (int j = 0; j < rMatrix[0].Length; j++)
+                {
+                    if (j == y) continue;
+
+                    float available = GetSpareInCol(j, involved);
+                    float used = Mathf.Min(left, available);
+                    bool reallyUsed = false;
+                    for (int k = 0; k < rMatrix.Length; k++)
+                    {
+                        if (rMatrix[k].Length > j && involved[k][j])
+                        {
+                            reallyUsed = true;
+                            float newWidth = Mathf.Max(eMatrix[k][j].mWidth, rMatrix[k][j].width - used);
+                            eMatrix[k][j].SetSize(newWidth, rMatrix[k][j].height, true);
+                        }
+                    }
+                    if (reallyUsed)
+                    {
+                        left -= used;
+                    }
+                }
+            //}
+
+            return value - left;
+        }
+
+        List<Vector2> GetAllElementsInvolvedInHeightChange(int x, int y, List<Vector2> elements = null)
+        {
+            if (elements == null)
+            {
+                elements = new List<Vector2>();
+            }
+            Vector2 v = new Vector2(x, y);
+            if (!elements.Contains(v))
+                elements.Add(v);
+
+            for (int i = x - 1; i <= x + 1; i++)
+            {
+                if (i == x || i < 0 || i >= rMatrix.Length || y >= rMatrix[i].Length) continue;
+
+                //if (rMatrix[x][y].width == rMatrix[i][y].width)
+                //{
+                //    Vector2 v2 = new Vector2(i, y);
+                //    if (elements == null || !elements.Contains(v2))
+                //        elements.Add(v2);
+                //}
+                //else
+                //{
+                    //if (rMatrix[x][y].width > rMatrix[i][y].width)
+                    //{
+                        for (int j = 0; j < rMatrix[i].Length; j++)
+                        {
+                            if (IsInXRange(rMatrix[i][j], rMatrix[x][y]) && (elements == null || !elements.Contains(new Vector2(i, j))))
+                            {
+                                GetAllElementsInvolvedInHeightChange(i,j, elements);
+                            }
+                        }
+                    //} else if (elements == null || !elements.Contains(new Vector2(i, y)))
+                    //{
+                    //    GetAllElementsInvolvedInHeightChange(i, y, elements);
+                    //}
+                //}
+            }
+
+            return elements;
+        }
+
+        List<Vector2> GetAllElementsInvolvedInWidthChange(int x, int y, List<Vector2> elements = null)
+        {
+            if (elements == null)
+            {
+                elements = new List<Vector2>();
+            }
+            Vector2 v = new Vector2(x, y);
+            if (!elements.Contains(v))
+                elements.Add(v);
+
             for (int i = y - 1; i <= y + 1; i++)
             {
                 if (i == y || i < 0 || i >= rMatrix[x].Length) continue;
 
-                if (rMatrix[x][y].height == rMatrix[x][i].height)
-                {
-                    spare += (rMatrix[x][i].width - eMatrix[x][i].mWidth);
-                } else {
+                //if (rMatrix[x][y].height == rMatrix[x][i].height)
+                //{
+                //    Vector2 v2 = new Vector2(x, i);
+                //    if (elements == null || !elements.Contains(v2))
+                //        elements.Add(v2);
+                //}
+                //else
+                //{
+                    //if (rMatrix[x][y].height > rMatrix[x][i].height)
+                    //{
+                        for (int j = 0; j < rMatrix.Length; j++)
+                        {
+                            if (i >= rMatrix[j].Length) continue;
 
+                            if (IsInYRange(rMatrix[j][i], rMatrix[x][y]) && (elements == null || !elements.Contains(new Vector2(j, i))))
+                            {
+                                GetAllElementsInvolvedInWidthChange(j, i, elements);
+                            }
+                        }
+                    //}
+                    //else if (elements == null || !elements.Contains(new Vector2(x, i)))
+                    //{
+                    //    GetAllElementsInvolvedInWidthChange(x, i, elements);
+                    //}
+                //}
+            }
+
+            return elements;
+        }
+
+        bool[][] GetBoolMatrix(Vector2[] vectors)
+        {
+            bool[][] res = new bool[rMatrix.Length][];
+            for (int i = 0; i < rMatrix.Length; i++)
+            {
+                res[i] = new bool[rMatrix[i].Length];
+                for (int j = 0; j < rMatrix[i].Length; j++)
+                {
+                    res[i][j] = false;
+                    for (int k = 0; k < vectors.Length; k++)
+                    {
+                        if (vectors[k].x == i && vectors[k].y == j)
+                        {
+                            res[i][j] = true;
+                        }
+                    }
                 }
             }
-            return spare;
+            return res;
         }
 
-        float GetSpareHeight(int x, int y)
+        bool IsInXRange(Rect r1, Rect r2)
         {
-            float spare = 0;
-            for (int i = x - 1; i <= x + 1; i++)
+            if (r1.xMin >= r2.xMin && r1.xMin < r2.xMax)
             {
-                if (i == x || i < 0 || i >= rMatrix.Length) continue;
-
-                if (rMatrix[x][y].width == rMatrix[i][y].width)
-                {
-                    spare += (rMatrix[i][y].height - eMatrix[i][y].mHeight);
-                } else
-                {
-
-                }
+                return true;
             }
-            return spare;
+            if (r1.xMax > r2.xMin && r1.xMax < r2.xMax)
+            {
+                return true;
+            }
+
+            return false;
         }
 
-        float CompensateHeight(int x, int y, float value)
+        bool IsInYRange(Rect r1, Rect r2)
         {
-            float left = value;
-            for (int i = x - 1; i <= x + 1; i++)
+            if (r1.yMin >= r2.yMin && r1.yMin < r2.yMax)
             {
-                if (i == x || i < 0 || i >= rMatrix.Length) continue;
-
-                float newHeight = Mathf.Max(eMatrix[i][y].mHeight, rMatrix[i][y].height - left);
-                eMatrix[i][y].SetSize(rMatrix[i][y].width, newHeight, true);
-                left -= (rMatrix[i][y].height - newHeight);
+                return true;
             }
-            return value - left;
-        }
-
-        float CompensateWidth(int x, int y, float value)
-        {
-            float left = value;
-            for (int i = y - 1; i <= y + 1; i++)
+            if (r1.yMax > r2.yMin && r1.yMax < r2.yMax)
             {
-                if (i == y || i < 0 || i >= rMatrix[x].Length) continue;
-
-                float newWidth = Mathf.Max(eMatrix[x][i].mWidth, rMatrix[x][i].width - left);
-                eMatrix[x][i].SetSize(newWidth, rMatrix[x][i].height, true);
-                left -= (rMatrix[x][i].width - newWidth);
+                return true;
             }
-            return value - left;
+
+            return false;
         }
 
         public void Remove(LayoutElement element)
         {
+            List<Cube> cs = new List<Cube>();
+            for (int i = 0; i < cubes.Length; i++)
+            {
+                if (cubes[i] != element.cube)
+                {
+                    cs.Add(cubes[i]);
+                }
+            }
+            cubes = cs.ToArray();
             MonoBehaviour.Destroy(element.cube.gameObject);
 
             elements.Remove(element);
+
+            appartment.RemoveModule(element.info);
+
+            //Master.GetInstance().designer.evaluate(appartment);
+
+            //ModuleInfo[] modules = appartment.GetModules();
+            //Restart(appartment, cubes, modules);
+
+            FixLayout(null, true);
+            UpdatePositions();
 
             FixLayout();
             UpdatePositions();
@@ -308,16 +643,27 @@ namespace HomeBuilder.Designing
             if (onChange != null) onChange();
         }
 
+        public void Apply()
+        {
+            for (int i = 0; i < elements.Count; i++)
+            {
+                ModuleInfo info = elements[i].info;
+
+                info.SetSize(elements[i].GetSize()[0], elements[i].GetSize()[1]);
+                info.SetSquare(elements[i].GetSquare());
+                info.SetPosition(elements[i].GetPosition().x, elements[i].GetPosition().y);
+            }
+        }
 
         public int[] matrix;
-        public void FixLayout(LayoutElement fixedElement = null)
+        public void FixLayout(LayoutElement fixedElement = null, bool superFix = false)
         {
             LayoutElement[] elements = GetElements();
 
             float width = Mathf.Sqrt(appartment.GetSquare());
             float height = width;
 
-            int cols = (int)Mathf.Floor(Mathf.Sqrt(elements.Length));
+            int cols = (int)Mathf.Ceil(Mathf.Sqrt(elements.Length));
             int rows = (int)Mathf.Ceil(elements.Length / (float)cols);
 
             float mHeight = height / rows;
@@ -346,23 +692,24 @@ namespace HomeBuilder.Designing
                     count++;
 
                     float h = 1, w = 1;
-                    //if (element != fixedElement)
-                    //{
-                    //    float sq = element.GetSquare();
-                    //    float spareUsed = Mathf.Max(element.mSquare, sq + spare) - sq;
-                    //    h = Mathf.Max(mHeight, element.GetSize()[1]);
-                    //    w = ((element.GetSquare() + spareUsed) / h);
-                    //    if (w < element.mWidth)
-                    //    {
-                    //        w = element.mWidth;
-                    //        h = ((element.GetSquare() + spareUsed) / w);
-                    //    }
-                    //    spare -= spareUsed;
-                    //} else
-                    //{
+                    if (superFix && element != fixedElement)
+                    {
+                        float sq = element.GetSquare();
+                        float spareUsed = Mathf.Max(element.mSquare, sq + spare / elements.Length) - sq;
+                        h = Mathf.Max(mHeight, element.mHeight);
+                        w = ((sq + spareUsed) / h);
+                        if (w < element.mWidth)
+                        {
+                            w = element.mWidth;
+                            h = ((sq + spareUsed) / w);
+                        }
+                        spare -= spareUsed;
+                    }
+                    else
+                    {
                         w = element.GetSize()[0];
                         h = element.GetSize()[1];
-                    //}
+                    }
 
                     Rect rect = GetRectForModule(w, h, levels[i], i > 0 ? levels[i - 1] : null);
 
@@ -417,11 +764,11 @@ namespace HomeBuilder.Designing
             {
                 if (upperLevel[i].xMin <= x && upperLevel[i].xMax > x)
                 {
-                    y1 = upperLevel[i].yMax;
+                        y1 = upperLevel[i].yMax;
                 }
-                if (upperLevel[i].xMin < x + width && upperLevel[i].xMax > x + width)
+                if (upperLevel[i].xMin < x + width && upperLevel[i].xMax >= x + width)
                 {
-                    y2 = upperLevel[i].yMax;
+                        y2 = upperLevel[i].yMax;
                 }
             }
 

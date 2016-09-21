@@ -7,7 +7,7 @@ namespace HomeBuilder
     {
 
         readonly static public string name       = "HomeBuilder";
-        readonly static public string version    = "0.1";
+        readonly static public string version    = "0.10";
         
         public class Scenes
         {
