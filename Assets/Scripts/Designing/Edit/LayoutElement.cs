@@ -51,8 +51,8 @@ namespace HomeBuilder.Designing
         public void SetSize(float w, float h, bool force = false)
         {
 
-            w = Mathf.RoundToInt(w);
-            h = Mathf.RoundToInt(h);
+            //w = Mathf.RoundToInt(w);
+            //h = Mathf.RoundToInt(h);
 
             if (force)
             {
@@ -90,7 +90,7 @@ namespace HomeBuilder.Designing
 
         public float GetSquare()
         {
-            return GetSquare(width, height);
+            return Mathf.RoundToInt( GetSquare(width, height) );
         }
 
 

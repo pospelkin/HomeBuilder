@@ -145,7 +145,7 @@ namespace HomeBuilder.Designing
         Vector2 changedPos;
         void OnMove(PlanRoom plan, Vector2 change)
         {
-            if (plan != selected) return;
+            //if (plan != selected) return;
 
             if (movePlan == null)
             {
@@ -251,18 +251,20 @@ namespace HomeBuilder.Designing
             Vector2 oldSize = plan.layoutElement.GetSize();
             float xChange = v.x / coef,
                 yChange = v.y / coef;
-            if (Mathf.Abs( xChange ) > 1 && Mathf.Abs( yChange )> 1)
+
+            float limit = 0.2f;
+            if (Mathf.Abs( xChange ) > 0 && Mathf.Abs( yChange )> limit)
             {
                 plan.layoutElement.SetSize(oldSize.x + xChange, oldSize.y + yChange);
 
                 v.y = 0;
                 v.x = 0;
-            } else if (Mathf.Abs( xChange ) > 1)
+            } else if (Mathf.Abs( xChange ) > limit)
             {
                 plan.layoutElement.SetSize(oldSize.x + xChange, oldSize.y);
                 v.x = 0;
             }
-            else if (Mathf.Abs( yChange ) > 1)
+            else if (Mathf.Abs( yChange ) > limit)
             {
                 plan.layoutElement.SetSize(oldSize.x, oldSize.y + yChange);
                 v.y = 0;

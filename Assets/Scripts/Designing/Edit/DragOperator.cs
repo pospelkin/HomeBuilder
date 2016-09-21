@@ -15,6 +15,8 @@ namespace HomeBuilder.Designing
         public delegate void OnDragEndHandler(DragOperator dragOperator);
         static public OnDragEndHandler onDragEndHandler;
 
+        public RectTransform reference;
+        public bool adaptiveCollider = false;
         public float longTapSec = 2;
 
         bool drag = false;
@@ -46,6 +48,20 @@ namespace HomeBuilder.Designing
         public Vector2 GetShift()
         {
             return (Vector2) Input.mousePosition - initPos;
+        }
+
+        void Update()
+        {
+            if (!adaptiveCollider) return;
+
+            BoxCollider2D box   = GetComponent<BoxCollider2D>();
+            RectTransform rect  = (RectTransform) transform;
+            if (box != null)
+            {
+                Vector2 size = new Vector2(reference.sizeDelta.x - 50, reference.sizeDelta.y - 50);
+                box.size    = size;
+                box.offset  = new Vector2(0, 0);
+            }
         }
 
         void OnMouseDrag()

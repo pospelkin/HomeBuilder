@@ -7,6 +7,8 @@ namespace HomeBuilder.Designing
 {
     public class Layout
     {
+        public Appartment appartment;
+
         public delegate void OnChange();
         public OnChange onChange;
 
@@ -15,19 +17,21 @@ namespace HomeBuilder.Designing
         LayoutElement[][] eMatrix;
         Rect[][] rMatrix;
         Cube[] cubes;
-
-        Appartment appartment;
+        Fixer fixer;
 
         public Layout(Appartment ap, Cube[] cubes, ModuleInfo[] infos)
         {
+            fixer       = new Fixer();
             appartment  = ap;
-            this.cubes = cubes;
+            this.cubes  = cubes;
 
             Restart(appartment, cubes, infos);
         }
 
         void Restart(Appartment ap, Cube[] cubes, ModuleInfo[] infos)
         {
+            fixer.Fix(appartment);
+
             List<LayoutElement> elems = elements;
             if (elems == null)
             {
@@ -215,6 +219,27 @@ namespace HomeBuilder.Designing
                         x = i;
                         y = j;
                     }
+                }
+            }
+
+            float nearingLimit = 0.5f;
+
+            for (int i = x - 1; i <= x + 1; i++) {
+                if (i < 0 || i >= eMatrix.Length || y < 0 || y >= eMatrix[i].Length || i == x ) continue;
+
+                if (rMatrix[i][y].x == rMatrix[x][y].x && Mathf.Abs(rMatrix[i][y].width - newWidth) < nearingLimit) {
+                    newWidth = rMatrix[i][y].width;
+                }
+
+            }
+
+            for (int j = y - 1; j <= y + 1; j++)
+            {
+                if (j < 0 || j >= eMatrix[x].Length || j == y) continue;
+
+                if (rMatrix[x][j].y == rMatrix[x][y].y && Mathf.Abs(rMatrix[x][j].height - newHeight) < nearingLimit)
+                {
+                    newHeight = rMatrix[x][j].height;
                 }
             }
 
@@ -490,7 +515,7 @@ namespace HomeBuilder.Designing
 
             for (int i = x - 1; i <= x + 1; i++)
             {
-                if (i == x || i < 0 || i >= rMatrix.Length || y >= rMatrix[i].Length) continue;
+                if (i == x || i < 0 || i >= rMatrix.Length /*|| y >= rMatrix[i].Length*/) continue;
 
                 //if (rMatrix[x][y].width == rMatrix[i][y].width)
                 //{
@@ -590,7 +615,7 @@ namespace HomeBuilder.Designing
             {
                 return true;
             }
-            if (r1.xMax > r2.xMin && r1.xMax < r2.xMax)
+            if (r1.xMax > r2.xMin && r1.xMax <= r2.xMax)
             {
                 return true;
             }
@@ -650,7 +675,6 @@ namespace HomeBuilder.Designing
                 ModuleInfo info = elements[i].info;
 
                 info.SetSize(elements[i].GetSize()[0], elements[i].GetSize()[1]);
-                info.SetSquare(elements[i].GetSquare());
                 info.SetPosition(elements[i].GetPosition().x, elements[i].GetPosition().y);
             }
         }
@@ -660,11 +684,10 @@ namespace HomeBuilder.Designing
         {
             LayoutElement[] elements = GetElements();
 
-            float width = Mathf.Sqrt(appartment.GetSquare());
-            float height = width;
+            float width     = fixer.width;
+            float height    = fixer.height;
 
-            int cols = (int)Mathf.Ceil(Mathf.Sqrt(elements.Length));
-            int rows = (int)Mathf.Ceil(elements.Length / (float)cols);
+            int rows = fixer.lastRes.Length;
 
             float mHeight = height / rows;
 
@@ -672,13 +695,15 @@ namespace HomeBuilder.Designing
 
             float spare = GetSpareSquare();
 
-            List<Rect>[] levels = new List<Rect>[rows];
-            List<LayoutElement>[] lElems = new List<LayoutElement>[rows];
+            List<Rect>[] levels             = new List<Rect>[rows];
+            List<LayoutElement>[] lElems    = new List<LayoutElement>[rows];
 
             matrix = new int[rows];
             this.elements = new List<LayoutElement>();
             for (int i = 0; i < rows; i++)
             {
+                int cols = fixer.lastRes[i].Length;
+
                 levels[i] = new List<Rect>();
                 lElems[i] = new List<LayoutElement>();
 
@@ -728,8 +753,8 @@ namespace HomeBuilder.Designing
             eMatrix = new LayoutElement[levels.Length][];
             for (int i = 0; i < levels.Length; i++)
             {
-                rMatrix[i]    = levels[i].ToArray();
-                eMatrix[i]    = lElems[i].ToArray();
+                rMatrix[i] = levels[i].ToArray();
+                eMatrix[i] = lElems[i].ToArray();
             }
 
             float[] size = GetAppSize(levels);

@@ -29,7 +29,11 @@ namespace HomeBuilder
         public class PrefabAssets
         {
 
-            readonly public string cube      = "Prefabs/cube_prefab";
+            readonly public string redCube      = "Prefabs/red_cube_prefab";
+            readonly public string greenCube    = "Prefabs/green_cube_prefab";
+            readonly public string blueCube     = "Prefabs/blue_cube_prefab";
+            readonly public string greyCube     = "Prefabs/grey_cube_prefab";
+
             readonly public string note      = "Prefabs/note_prefab";
             readonly public string module    = "Prefabs/module_prefab";
             readonly public string moduleS   = "Prefabs/module_small_prefab";
@@ -58,6 +62,11 @@ namespace HomeBuilder
             readonly public string hallStyleModern = "Sprites/Hall/style_modern";
             readonly public string hallStyleClassic = "Sprites/Hall/style_classic";
             readonly public string hallStyleOld = "Sprites/Hall/style_old";
+
+            readonly public string redBox   = "Sprites/redbox";
+            readonly public string greenBox = "Sprites/greeanbox";
+            readonly public string blueBox  = "Sprites/bluebox";
+            readonly public string greyBox  = "Sprites/greybox";
         }
 
     }

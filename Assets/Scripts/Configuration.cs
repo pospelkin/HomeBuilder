@@ -40,10 +40,10 @@ namespace HomeBuilder
             }
 
             readonly static public ModuleParams[] approvedModules = new ModuleParams[] {
-                new ModuleParams("Kitchen"   , 8,    2, 4, Color.red),
-                new ModuleParams("Bathroom" , 6,    2, 3, Color.green),
-                new ModuleParams("Hall", 12,   3, 4, Color.blue),
-                new ModuleParams("Bedroom"  , 16,   4, 4, Color.gray)
+                new ModuleParams("Kitchen"   , 8,    2, 4, Color.red, Assets.GetInstance().prefabs.redCube),
+                new ModuleParams("Bathroom" , 6,    2, 3, Color.green, Assets.GetInstance().prefabs.greenCube),
+                new ModuleParams("Hall", 12,   3, 4, Color.blue, Assets.GetInstance().prefabs.blueCube),
+                new ModuleParams("Bedroom"  , 16,   4, 4, Color.gray, Assets.GetInstance().prefabs.greyCube)
             };
 
             public class ModuleParams
@@ -53,14 +53,16 @@ namespace HomeBuilder
                 readonly public float minWidth;
                 readonly public float minHeight;
                 readonly public Color color;
+                readonly public string asset;
 
-                public ModuleParams(string name, float sq, float w, float h, Color color)
+                public ModuleParams(string name, float sq, float w, float h, Color color, string asset)
                 {
                     this.name   = name;
                     minSquare   = sq;
                     minWidth    = w;
                     minHeight   = h;
                     this.color  = color;
+                    this.asset = asset;
                 }
             }
             

@@ -97,7 +97,7 @@ namespace HomeBuilder.Designing
             ModuleInfo[] modules = appartment.GetModules();
             for (int i = 0; i < modules.Length; i++)
             {
-                cubes.Add(GetCube(modules[i].GetParams().color));
+                cubes.Add(GetCube(modules[i].GetParams().asset));
             }
 
             return new Layout(appartment, cubes.ToArray(), modules);
@@ -108,15 +108,13 @@ namespace HomeBuilder.Designing
             layout.Destory();
         }
 
-        Cube GetCube(Color color)
+        Cube GetCube(string prefab)
         {
-            GameObject obj = Instantiate(Resources.Load(Assets.GetInstance().prefabs.cube), mainTransform) as GameObject;
+            GameObject obj = Instantiate(Resources.Load(prefab), mainTransform) as GameObject;
 
             Cube cube = obj.GetComponent<Cube>();
             cube.SetSize(1, 1);
             cube.SetPosition(0, 0);
-
-            obj.GetComponent<MeshRenderer>().material.color = color;
 
             return cube;
         }
