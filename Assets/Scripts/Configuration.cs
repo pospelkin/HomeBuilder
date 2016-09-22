@@ -42,7 +42,7 @@ namespace HomeBuilder
             readonly static public ModuleParams[] approvedModules = new ModuleParams[] {
                 new ModuleParams("Kitchen"   , 8,    2, 4, Color.red, Assets.GetInstance().prefabs.redCube),
                 new ModuleParams("Bathroom" , 6,    2, 3, Color.green, Assets.GetInstance().prefabs.greenCube),
-                new ModuleParams("Hall", 12,   3, 4, Color.blue, Assets.GetInstance().prefabs.blueCube),
+                new ModuleParams("Guestroom", 12,   3, 4, Color.blue, Assets.GetInstance().prefabs.blueCube),
                 new ModuleParams("Bedroom"  , 16,   4, 4, Color.gray, Assets.GetInstance().prefabs.greyCube)
             };
 

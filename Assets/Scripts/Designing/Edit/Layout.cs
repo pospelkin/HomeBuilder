@@ -51,7 +51,7 @@ namespace HomeBuilder.Designing
                     infos[i].GetParams().minSquare
                     );
                 elem.SetPosition(new Vector2(infos[i].GetPosition()[0], infos[i].GetPosition()[1]));
-                elem.SetSize(infos[i].GetSize()[0], infos[i].GetSize()[1], true);
+                elem.SetSize(infos[i].GetSize()[0], infos[i].GetSize()[1], true, false);
 
                 elems.Add(elem);
             }
@@ -200,7 +200,7 @@ namespace HomeBuilder.Designing
             return sq;
         }
 
-        public void RequestChange(LayoutElement el, float newWidth, float newHeight)
+        public void RequestChange(LayoutElement el, float newWidth, float newHeight, Vector2 type)
         {
             float width = el.GetSize().x, height = el.GetSize().y;
             float newSquare = newWidth * newHeight;
@@ -218,13 +218,23 @@ namespace HomeBuilder.Designing
                 }
             }
 
-            float nearingLimit = 0.5f;
+            float nearingLimit = 0.2f;
 
             for (int i = x - 1; i <= x + 1; i++) {
                 if (i < 0 || i >= eMatrix.Length || y < 0 || y >= eMatrix[i].Length || i == x ) continue;
 
-                if (rMatrix[i][y].x == rMatrix[x][y].x && Mathf.Abs(rMatrix[i][y].width - newWidth) < nearingLimit) {
-                    newWidth = rMatrix[i][y].width;
+                if (type.x > 0)
+                {
+                    if (rMatrix[i][y].x == rMatrix[x][y].x && Mathf.Abs(rMatrix[i][y].width - newWidth) < nearingLimit)
+                    {
+                        newWidth = rMatrix[i][y].width;
+                    }
+                } else if (type.x < 0)
+                {
+                    if (Mathf.Abs(rMatrix[i][y].x - (rMatrix[x][y].x - (rMatrix[x][y].width - newWidth))) < nearingLimit)
+                    {
+                        newWidth = rMatrix[x][y].width + Mathf.Abs(rMatrix[i][y].x - rMatrix[x][y].x);
+                    }
                 }
 
             }
@@ -233,10 +243,21 @@ namespace HomeBuilder.Designing
             {
                 if (j < 0 || j >= eMatrix[x].Length || j == y) continue;
 
-                if (rMatrix[x][j].y == rMatrix[x][y].y && Mathf.Abs(rMatrix[x][j].height - newHeight) < nearingLimit)
+                if (type.y > 0)
                 {
-                    newHeight = rMatrix[x][j].height;
+                    if (rMatrix[x][j].y == rMatrix[x][y].y && Mathf.Abs(rMatrix[x][j].height - newHeight) < nearingLimit)
+                    {
+                        newHeight = rMatrix[x][j].height;
+                    }
                 }
+                else if (type.y < 0)
+                {
+                    if (Mathf.Abs(rMatrix[x][j].y - (rMatrix[x][y].y - (rMatrix[x][y].height - newHeight))) < nearingLimit)
+                    {
+                        newHeight = rMatrix[x][y].height + Mathf.Abs(rMatrix[x][j].y - rMatrix[x][y].y);
+                    }
+                }
+                
             }
 
             if (newWidth < el.mWidth || newHeight < el.mHeight)
@@ -249,7 +270,7 @@ namespace HomeBuilder.Designing
             {
                 float change = newHeight - height;
 
-                bool[][] involved = GetBoolMatrix(GetAllElementsInvolvedInHeightChange(x, y).ToArray());
+                bool[][] involved = GetBoolMatrix(GetAllElementsInvolvedInHeightChange(x, y, null, (int) type.y).ToArray());
 
                 float spareInRow = GetSpareInRow(x, involved[x]);
                 if (change < 0 && spareInRow < Mathf.Abs(change))
@@ -257,9 +278,9 @@ namespace HomeBuilder.Designing
                     change = -spareInRow;
                 }
 
-                if (change <= GetSpareHeight(x, y, involved) /*&& HeightChangeAllowed(x, y)*/)
+                if (change <= GetSpareHeight(x, y, involved, (int) type.y) /*&& HeightChangeAllowed(x, y)*/)
                 {
-                    float changed = CompensateHeight(x, y, change, involved);
+                    float changed = CompensateHeight(x, y, change, involved, (int) type.y);
 
                     ChangeHeightInvolved(x, y, involved, changed);
                 }
@@ -272,7 +293,7 @@ namespace HomeBuilder.Designing
             {
                 float change = newWidth - width;
 
-                bool[][] involved = GetBoolMatrix(GetAllElementsInvolvedInWidthChange(x, y).ToArray());
+                bool[][] involved = GetBoolMatrix(GetAllElementsInvolvedInWidthChange(x, y, null, (int) type.x).ToArray());
 
                 float spareInCol = GetSpareInCol(y, involved);
                 if (change < 0 && spareInCol < Mathf.Abs( change ) )
@@ -280,9 +301,9 @@ namespace HomeBuilder.Designing
                     change = -spareInCol;
                 }
 
-                if (change <= GetSpareWidth(x, y, involved) && WidthChangeAllowed(x, y))
+                if (change <= GetSpareWidth(x, y, involved, (int)type.x)/* && WidthChangeAllowed(x, y)*/)
                 {
-                    float changed = CompensateWidth(x, y, change, involved);
+                    float changed = CompensateWidth(x, y, change, involved, (int)type.x);
 
                     ChangeWidthInvolved(x, y, involved, changed);
                 }
@@ -345,7 +366,7 @@ namespace HomeBuilder.Designing
             return true;
         }
 
-        float GetSpareWidth(int x, int y, bool[][] involved)
+        float GetSpareWidth(int x, int y, bool[][] involved, int dir)
         {
             float spare = 0;
             //for (int i = y - 1; i <= y + 1; i++)
@@ -359,18 +380,24 @@ namespace HomeBuilder.Designing
 
             //    }
             //}
-            
-            for (int i = 0; i < rMatrix[x].Length; i++)
+            if (dir > 0)
             {
-                if (i == y) continue;
-
-                spare += GetSpareInCol(i, involved);
+                for (int i = y + 1; i < rMatrix[x].Length; i++)
+                {
+                    spare += GetSpareInCol(i, involved);
+                }
+            } else if (dir < 0)
+            {
+                for (int i = 0; i < y; i++)
+                {
+                    spare += GetSpareInCol(i, involved);
+                }
             }
 
             return spare;
         }
 
-        float GetSpareHeight(int x, int y, bool[][] involved)
+        float GetSpareHeight(int x, int y, bool[][] involved, int dir)
         {
             float spare = 0;
             
@@ -384,26 +411,35 @@ namespace HomeBuilder.Designing
             //    }
             //}
 
-            for (int i = 0; i < rMatrix.Length; i++)
+            if (dir > 0)
             {
-                if (i == x) continue;
-
-                spare += GetSpareInRow(i, involved[i]);
+                for (int i = x + 1; i < rMatrix.Length; i++)
+                {
+                    spare += GetSpareInRow(i, involved[i]);
+                }
+            } else if (dir < 0)
+            {
+                for (int i = 0; i < x; i++)
+                {
+                    spare += GetSpareInRow(i, involved[i]);
+                }
             }
 
             return spare;
         }
 
-        float GetSpareInRow(int i, bool[] involved)
+        float GetSpareInRow(int i, bool[] involved = null)
         {
             float spareInRow = float.PositiveInfinity;
+
             for (int j = 0; j < rMatrix[i].Length; j++)
             {
-                if (involved[j])
+                if (involved == null || involved[j])
                 {
                     spareInRow = Mathf.Min(spareInRow, rMatrix[i][j].height - eMatrix[i][j].mHeight);
                 }
             }
+            
             return spareInRow;
         }
 
@@ -422,7 +458,7 @@ namespace HomeBuilder.Designing
         }
         
 
-        float CompensateHeight(int x, int y, float value, bool[][] involved)
+        float CompensateHeight(int x, int y, float value, bool[][] involved, int dir)
         {
             float left = value;
             //for (int i = x - 1; i <= x + 1; i++)
@@ -433,33 +469,46 @@ namespace HomeBuilder.Designing
             //    eMatrix[i][y].SetSize(rMatrix[i][y].width, newHeight, true);
             //    left -= (rMatrix[i][y].height - newHeight);
             //}
-
-            for (int i = 0; i < rMatrix.Length; i++)
+            
+            if (dir > 0)
             {
-                if (i == x) continue;
-
-                float available = GetSpareInRow(i, involved[i]);
-                float used      = Mathf.Min(left, available);
-                bool reallyUsed = false;
-                for (int j = 0; j < rMatrix[i].Length; j++)
+                for (int i = x+1; i < rMatrix.Length; i++)
                 {
-                    if (involved[i][j])
-                    {
-                        reallyUsed = true;
-                        float newHeight = Mathf.Max(eMatrix[i][j].mHeight, rMatrix[i][j].height - used);
-                        eMatrix[i][j].SetSize(rMatrix[i][j].width, newHeight, true);
-                    }
+                    left -= GetHeightCompensated(x, y, i, involved, left);
                 }
-                if (reallyUsed)
+            } else if (dir < 0)
+            {
+                for (int i = x-1; i >= 0; i--)
                 {
-                    left -= used;
+                    left -= GetHeightCompensated(x, y, i, involved, left);
                 }
             }
 
             return value - left;
         }
 
-        float CompensateWidth(int x, int y, float value, bool[][] involved)
+        float GetHeightCompensated(int x, int y, int i, bool[][] involved, float value)
+        {
+            float available = GetSpareInRow(i, involved[i]);
+            float used = Mathf.Min(value, available);
+            bool reallyUsed = false;
+            for (int j = 0; j < rMatrix[i].Length; j++)
+            {
+                if (involved[i][j])
+                {
+                    reallyUsed = true;
+                    float newHeight = Mathf.Max(eMatrix[i][j].mHeight, rMatrix[i][j].height - used);
+                    eMatrix[i][j].SetSize(rMatrix[i][j].width, newHeight, true);
+                }
+            }
+            if (reallyUsed)
+            {
+                return used;
+            }
+            return 0;
+        }
+
+        float CompensateWidth(int x, int y, float value, bool[][] involved, int dir)
         {
             float left = value;
             //for (int i = y - 1; i <= y + 1; i++)
@@ -473,33 +522,47 @@ namespace HomeBuilder.Designing
 
             //for (int i = 0; i < rMatrix.Length; i++)
             //{
-                for (int j = 0; j < rMatrix[0].Length; j++)
-                {
-                    if (j == y) continue;
 
-                    float available = GetSpareInCol(j, involved);
-                    float used = Mathf.Min(left, available);
-                    bool reallyUsed = false;
-                    for (int k = 0; k < rMatrix.Length; k++)
-                    {
-                        if (rMatrix[k].Length > j && involved[k][j])
-                        {
-                            reallyUsed = true;
-                            float newWidth = Mathf.Max(eMatrix[k][j].mWidth, rMatrix[k][j].width - used);
-                            eMatrix[k][j].SetSize(newWidth, rMatrix[k][j].height, true);
-                        }
-                    }
-                    if (reallyUsed)
-                    {
-                        left -= used;
-                    }
+            if (dir > 0)
+            {
+                for (int j = y+1; j < rMatrix[0].Length; j++)
+                {
+                    left -= GetWidthCompensated(x, y, j, involved, left);
                 }
+            } else if (dir < 0)
+            {
+                for (int j = y-1; j >= 0; j--)
+                {
+                    left -= GetWidthCompensated(x, y, j, involved, left);
+                }
+            }
             //}
 
             return value - left;
         }
 
-        List<Vector2> GetAllElementsInvolvedInHeightChange(int x, int y, List<Vector2> elements = null)
+        float GetWidthCompensated(int x, int y, int j, bool[][] involved, float value)
+        {
+            float available = GetSpareInCol(j, involved);
+            float used = Mathf.Min(value, available);
+            bool reallyUsed = false;
+            for (int k = 0; k < rMatrix.Length; k++)
+            {
+                if (rMatrix[k].Length > j && involved[k][j])
+                {
+                    reallyUsed = true;
+                    float newWidth = Mathf.Max(eMatrix[k][j].mWidth, rMatrix[k][j].width - used);
+                    eMatrix[k][j].SetSize(newWidth, rMatrix[k][j].height, true);
+                }
+            }
+            if (reallyUsed)
+            {
+                return used;
+            }
+            return 0;
+        }
+
+        List<Vector2> GetAllElementsInvolvedInHeightChange(int x, int y, List<Vector2> elements = null, int dir = 0)
         {
             if (elements == null)
             {
@@ -509,38 +572,26 @@ namespace HomeBuilder.Designing
             if (!elements.Contains(v))
                 elements.Add(v);
 
-            for (int i = x - 1; i <= x + 1; i++)
+            int from = dir  > 0 ? x : x - 1;
+            int to = dir    < 0 ? x : x + 1;
+            for (int i = from; i <= to; i++)
             {
                 if (i == x || i < 0 || i >= rMatrix.Length /*|| y >= rMatrix[i].Length*/) continue;
 
-                //if (rMatrix[x][y].width == rMatrix[i][y].width)
-                //{
-                //    Vector2 v2 = new Vector2(i, y);
-                //    if (elements == null || !elements.Contains(v2))
-                //        elements.Add(v2);
-                //}
-                //else
-                //{
-                    //if (rMatrix[x][y].width > rMatrix[i][y].width)
-                    //{
-                        for (int j = 0; j < rMatrix[i].Length; j++)
-                        {
-                            if (IsInXRange(rMatrix[i][j], rMatrix[x][y]) && (elements == null || !elements.Contains(new Vector2(i, j))))
-                            {
-                                GetAllElementsInvolvedInHeightChange(i,j, elements);
-                            }
-                        }
-                    //} else if (elements == null || !elements.Contains(new Vector2(i, y)))
-                    //{
-                    //    GetAllElementsInvolvedInHeightChange(i, y, elements);
-                    //}
-                //}
+                for (int j = 0; j < rMatrix[i].Length; j++)
+                {
+                    if (IsInXRange(rMatrix[i][j], rMatrix[x][y]) && (elements == null || !elements.Contains(new Vector2(i, j))))
+                    {
+                        GetAllElementsInvolvedInHeightChange(i,j, elements);
+                    }
+                }
+
             }
 
             return elements;
         }
 
-        List<Vector2> GetAllElementsInvolvedInWidthChange(int x, int y, List<Vector2> elements = null)
+        List<Vector2> GetAllElementsInvolvedInWidthChange(int x, int y, List<Vector2> elements = null, int dir = 0)
         {
             if (elements == null)
             {
@@ -550,7 +601,9 @@ namespace HomeBuilder.Designing
             if (!elements.Contains(v))
                 elements.Add(v);
 
-            for (int i = y - 1; i <= y + 1; i++)
+            int from    = dir > 0 ? y : y - 1;
+            int to      = dir < 0 ? y : y + 1;
+            for (int i = from; i <= to; i++)
             {
                 if (i == y || i < 0 || i >= rMatrix[x].Length) continue;
 

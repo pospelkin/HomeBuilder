@@ -109,10 +109,17 @@ namespace HomeBuilder.Designing
 
             int cols = defCols;
             float lastRow = modules.Length % defCols;
-            if (lastRow == 1)
+            if (lastRow == 1 && modules.Length > 3)
             {
                 cols = defCols + 1;
                 rows--;
+            }
+
+            if (modules.Length == 2)
+            {
+                cols = 1;
+                rows = 2;
+                lastRow = 0;
             }
 
             width   = Mathf.RoundToInt(Mathf.Sqrt(appartment.GetSquare()));
@@ -129,7 +136,7 @@ namespace HomeBuilder.Designing
                 levels[i] = new List<Rect>();
 
                 int end = cols;
-                if (lastRow == 1)
+                if (lastRow == 1 && modules.Length > 3)
                 {
                     end = i == rows - 1 ? cols : defCols;
                 } else if (lastRow != 0)

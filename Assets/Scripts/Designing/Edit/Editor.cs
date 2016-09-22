@@ -241,7 +241,7 @@ namespace HomeBuilder.Designing
 
 
         Dictionary<PlanRoom, Vector2> dictionary = new Dictionary<PlanRoom, Vector2>();
-        void OnResize(PlanRoom plan, Vector2 change)
+        void OnResize(PlanRoom plan, Vector2 type, Vector2 change)
         {
             if (!dictionary.ContainsKey(plan))
             {
@@ -253,24 +253,24 @@ namespace HomeBuilder.Designing
             v.y += change.y;
 
             Vector2 oldSize = plan.layoutElement.GetSize();
-            float xChange = v.x / coef,
-                yChange = v.y / coef;
+            float   xChange = v.x / coef * type.x,
+                    yChange = v.y / coef * type.y;
 
-            float limit = 0.2f;
+            float limit = 0.1f;
             if (Mathf.Abs( xChange ) > 0 && Mathf.Abs( yChange )> limit)
             {
-                plan.layoutElement.SetSize(oldSize.x + xChange, oldSize.y + yChange);
+                plan.layoutElement.RequestSizeChage(type, new Vector2(xChange, yChange));
 
                 v.y = 0;
                 v.x = 0;
             } else if (Mathf.Abs( xChange ) > limit)
             {
-                plan.layoutElement.SetSize(oldSize.x + xChange, oldSize.y);
+                plan.layoutElement.RequestSizeChage(type, new Vector2(xChange, 0));
                 v.x = 0;
             }
             else if (Mathf.Abs( yChange ) > limit)
             {
-                plan.layoutElement.SetSize(oldSize.x, oldSize.y + yChange);
+                plan.layoutElement.RequestSizeChage(type, new Vector2(0, yChange));
                 v.y = 0;
             }
             dictionary[plan] = v;

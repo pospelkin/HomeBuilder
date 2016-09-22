@@ -10,7 +10,7 @@ namespace HomeBuilder.Designing
         public delegate void OnSelect(PlanRoom plan);
         public delegate void OnMove(PlanRoom plan, Vector2 change);
         public delegate void OnMoveEnd(PlanRoom plan);
-        public delegate void OnResize(PlanRoom plan, Vector2 change);
+        public delegate void OnResize(PlanRoom plan, Vector2 type, Vector2 change);
         public delegate void OnRemove(PlanRoom plan);
         static public OnSelect onSelect;
         static public OnMove onMove;
@@ -60,9 +60,9 @@ namespace HomeBuilder.Designing
             }
         }
 
-        public void Resize(Vector2 shift)
+        public void Resize(Vector2 type, Vector2 shift)
         {
-            if (onResize != null) onResize(this, new Vector2(shift.x, -shift.y));
+            if (onResize != null) onResize(this, type, new Vector2(shift.x, -shift.y));
         }
 
         void Start()
@@ -127,7 +127,7 @@ namespace HomeBuilder.Designing
             } else
             {
                 if (shift.x == 0 && shift.y == 0) return;
-                Resize(new Vector2(type.x * shift.x, type.y * shift.y));
+                Resize(type, shift);
             }
         }
     }

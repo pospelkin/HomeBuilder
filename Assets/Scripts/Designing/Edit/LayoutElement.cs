@@ -48,11 +48,27 @@ namespace HomeBuilder.Designing
             return position;
         }
 
-        public void SetSize(float w, float h, bool force = false)
+        public void RequestSizeChage(Vector2 type, Vector2 change)
         {
+            float newW = Mathf.RoundToInt((width + change.x) * 100f) / 100f;
+            float newH = Mathf.RoundToInt((height + change.y) * 100f) / 100f;
 
-            //w = Mathf.RoundToInt(w);
-            //h = Mathf.RoundToInt(h);
+            if (newW < mWidth)  newW = mWidth;
+            if (newH < mHeight) newH = mHeight;
+
+            if (GetSquare(newW, newH) >= mSquare)
+            {
+                layout.RequestChange(this, newW, newH, type);
+            }
+        }
+
+        public void SetSize(float w, float h, bool force = false, bool round = true)
+        {
+            if (round)
+            {
+                w = Mathf.RoundToInt(w * 100f ) / 100f;
+                h = Mathf.RoundToInt(h * 100f ) / 100f;
+            }
 
             if (force)
             {
@@ -73,7 +89,7 @@ namespace HomeBuilder.Designing
                 }
 
                 if (GetSquare(tW, tH) >= mSquare) {
-                    layout.RequestChange(this, tW, tH);
+                    layout.RequestChange(this, tW, tH, new Vector2(1, 1));
                 }
             }   
         }
