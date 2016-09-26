@@ -218,47 +218,9 @@ namespace HomeBuilder.Designing
                 }
             }
 
-            float nearingLimit = 0.2f;
-
-            for (int i = x - 1; i <= x + 1; i++) {
-                if (i < 0 || i >= eMatrix.Length || y < 0 || y >= eMatrix[i].Length || i == x ) continue;
-
-                if (type.x > 0)
-                {
-                    if (rMatrix[i][y].x == rMatrix[x][y].x && Mathf.Abs(rMatrix[i][y].width - newWidth) < nearingLimit)
-                    {
-                        newWidth = rMatrix[i][y].width;
-                    }
-                } else if (type.x < 0)
-                {
-                    if (Mathf.Abs(rMatrix[i][y].x - (rMatrix[x][y].x - (rMatrix[x][y].width - newWidth))) < nearingLimit)
-                    {
-                        newWidth = rMatrix[x][y].width + Mathf.Abs(rMatrix[i][y].x - rMatrix[x][y].x);
-                    }
-                }
-
-            }
-
-            for (int j = y - 1; j <= y + 1; j++)
-            {
-                if (j < 0 || j >= eMatrix[x].Length || j == y) continue;
-
-                if (type.y > 0)
-                {
-                    if (rMatrix[x][j].y == rMatrix[x][y].y && Mathf.Abs(rMatrix[x][j].height - newHeight) < nearingLimit)
-                    {
-                        newHeight = rMatrix[x][j].height;
-                    }
-                }
-                else if (type.y < 0)
-                {
-                    if (Mathf.Abs(rMatrix[x][j].y - (rMatrix[x][y].y - (rMatrix[x][y].height - newHeight))) < nearingLimit)
-                    {
-                        newHeight = rMatrix[x][y].height + Mathf.Abs(rMatrix[x][j].y - rMatrix[x][y].y);
-                    }
-                }
-                
-            }
+            Vector2 rounded = RoundToNearest(newWidth, newHeight, new Vector2(x, y), type);
+            newWidth        = rounded.x;
+            newHeight       = rounded.y;
 
             if (newWidth < el.mWidth || newHeight < el.mHeight)
             {
@@ -316,6 +278,73 @@ namespace HomeBuilder.Designing
 
         }
 
+        Vector2 RoundToNearest(float width, float height, Vector2 position, Vector2 type)
+        {
+            float w = width,
+                    h = height;
+
+            float nearingLimit = 0.4f;
+
+            int posX = (int)position.x,
+                posY = (int)position.y;
+
+            float x = rMatrix[posX][posY].x,
+                    y = rMatrix[posX][posY].y;
+
+            for (int i = 0; i <= rMatrix.Length; i++)
+            {
+                if (i < 0 || i >= eMatrix.Length || posY < 0 || posY >= eMatrix[i].Length || i == posX) continue;
+
+                float tX = 0;
+                if (type.x > 0)
+                {
+                    tX = x + width;
+                }
+                else if (type.x < 0)
+                {
+                    tX = x + (rMatrix[posX][posY].width - width);
+                }
+                if (Mathf.Abs(rMatrix[i][posY].xMin - tX) < nearingLimit)
+                {
+                    w = width + type.x * (rMatrix[i][posY].xMin - tX);
+                    break;
+                }
+                if (Mathf.Abs(rMatrix[i][posY].xMax - tX) < nearingLimit)
+                {
+                    w = width + type.x * (rMatrix[i][posY].xMax - tX);
+                    break;
+                }
+            }
+
+            for (int j = posY - 1; j <= posY + 1; j++)
+            {
+                if (j < 0 || j >= rMatrix[posX].Length || j == posY) continue;
+
+                float tY = 0;
+                if (type.y > 0)
+                {
+                    tY = y + height;
+                }
+                else if (type.y < 0)
+                {
+                    tY = y + (rMatrix[posX][posY].height - height);
+                }
+
+                if (Mathf.Abs(rMatrix[posX][j].yMin - tY) < nearingLimit)
+                {
+                    h = height + type.y * (rMatrix[posX][j].yMin - tY);
+                    break;
+                }
+                if (Mathf.Abs(rMatrix[posX][j].yMax - tY) < nearingLimit)
+                {
+                    h = height + type.y * (rMatrix[posX][j].yMax - tY);
+                    break;
+                }
+            }
+
+            return new Vector2(w, h);
+        }
+
         void ChangeHeightInvolved(int x, int y, bool[][] involved, float changed)
         {
             for (int j = 0; j < involved[x].Length; j++)
@@ -327,15 +356,27 @@ namespace HomeBuilder.Designing
             }
         }
 
+        int chahgeRoundCount = 0;
         void ChangeWidthInvolved(int x, int y, bool[][] involved, float changed)
         {
+            Debug.Log("------------CHANGE ROUND________" + chahgeRoundCount);
             for (int j = 0; j < rMatrix.Length; j++)
             {
-                if (y < involved[j].Length && involved[j][y])
+                int[] index = GetAnalogForCol(x, y, j);
+                Debug.Log("Index " + x + ", " + y + " have " + index.Length + " analogs.");
+                for (int l = 0; l < index.Length; l++)
                 {
-                    eMatrix[j][y].SetSize(rMatrix[j][y].width + changed, rMatrix[j][y].height, true);
+                    int ind = index[l];
+                    if (ind < involved[j].Length && involved[j][ind])
+                    {
+                        float width = eMatrix[j][ind].GetSize().x;
+                        float changePerUnit = changed / index.Length;
+                        eMatrix[j][ind].SetSize(width + changePerUnit, eMatrix[j][ind].GetSize().y, true);
+                        Debug.Log("Changed cube (" + j + ", " + ind + ") " + (eMatrix[j][ind].GetSize().x - width) + " to " + width + " + " + changePerUnit + " = " + eMatrix[j][ind].GetSize().x);
+                    }
                 }
             }
+            Debug.Log("------------CHANGE ROUND END________" + chahgeRoundCount++);
         }
 
         bool HeightChangeAllowed(int x, int y)
@@ -380,17 +421,18 @@ namespace HomeBuilder.Designing
 
             //    }
             //}
+            List<Vector2> changed = new List<Vector2>();
             if (dir > 0)
             {
                 for (int i = y + 1; i < rMatrix[x].Length; i++)
                 {
-                    spare += GetSpareInCol(i, involved);
+                    spare += GetSpareInCol(i, involved, changed);
                 }
             } else if (dir < 0)
             {
                 for (int i = 0; i < y; i++)
                 {
-                    spare += GetSpareInCol(i, involved);
+                    spare += GetSpareInCol(i, involved, changed);
                 }
             }
 
@@ -443,14 +485,24 @@ namespace HomeBuilder.Designing
             return spareInRow;
         }
 
-        float GetSpareInCol(int i, bool[][] involved)
+        float GetSpareInCol(int i, bool[][] involved, List<Vector2> changed = null)
         {
             float spareInCol = float.PositiveInfinity;
             for (int j = 0; j < rMatrix.Length; j++)
             {
-                if (i < involved[j].Length && involved[j][i])
+                int[] index = GetAnalogForCol(0, i, j, true);
+
+                for (int l = 0; l < index.Length; l++)
                 {
-                    spareInCol = Mathf.Min(spareInCol, rMatrix[j][i].width - eMatrix[j][i].mWidth);
+                    int ind = index[l];
+                    if (ind < involved[j].Length && involved[j][ind] && (changed == null || !changed.Contains(new Vector2(j, ind))))
+                    {
+                        if (changed != null)
+                        {
+                            changed.Add(new Vector2(j, ind));
+                        }
+                        spareInCol = Mathf.Min(spareInCol, rMatrix[j][ind].width - eMatrix[j][ind].mWidth);
+                    }
                 }
             }
 
@@ -508,6 +560,7 @@ namespace HomeBuilder.Designing
             return 0;
         }
 
+        int compRoundCount = 0;
         float CompensateWidth(int x, int y, float value, bool[][] involved, int dir)
         {
             float left = value;
@@ -523,36 +576,55 @@ namespace HomeBuilder.Designing
             //for (int i = 0; i < rMatrix.Length; i++)
             //{
 
+            //Debug.Log("---------------Compensation round--------------" + compRoundCount++);
+            List<Vector2> changed = new List<Vector2>();
             if (dir > 0)
             {
                 for (int j = y+1; j < rMatrix[0].Length; j++)
                 {
-                    left -= GetWidthCompensated(x, y, j, involved, left);
+                    left -= GetWidthCompensated(x, y, j, involved, left, null);
                 }
             } else if (dir < 0)
             {
                 for (int j = y-1; j >= 0; j--)
                 {
-                    left -= GetWidthCompensated(x, y, j, involved, left);
+                    left -= GetWidthCompensated(x, y, j, involved, left, null);
                 }
             }
+            //Debug.Log("---------------Compensation end--------------");
             //}
 
             return value - left;
         }
 
-        float GetWidthCompensated(int x, int y, int j, bool[][] involved, float value)
+        float GetWidthCompensated(int x, int y, int j, bool[][] involved, float value, List<Vector2> changed)
         {
             float available = GetSpareInCol(j, involved);
             float used = Mathf.Min(value, available);
+            if (used == 0) return 0;
             bool reallyUsed = false;
             for (int k = 0; k < rMatrix.Length; k++)
             {
-                if (rMatrix[k].Length > j && involved[k][j])
+                int[] index = GetAnalogForCol(x, j, k);
+
+                for (int l = 0; l < 1; l++)
                 {
-                    reallyUsed = true;
-                    float newWidth = Mathf.Max(eMatrix[k][j].mWidth, rMatrix[k][j].width - used);
-                    eMatrix[k][j].SetSize(newWidth, rMatrix[k][j].height, true);
+                    int ind = index[l];
+                    if (rMatrix[k].Length > ind && involved[k][ind] && (changed == null || !changed.Contains(new Vector2(k, ind))))
+                    {
+                        //if (changed != null)
+                        //{
+                        //    changed.Add(new Vector2(k, l));
+                        //}
+                        reallyUsed = true;
+                        float width = eMatrix[k][ind].GetSize().x;
+                        float newWidth = Mathf.Max(eMatrix[k][ind].mWidth, width - used);
+                        eMatrix[k][ind].SetSize(newWidth, rMatrix[k][ind].height, true);
+                        //Debug.Log("Compensated in cube (" + k + ", " + ind + ") " + (newWidth - width) + " to " + width + " + " + used + " = " + newWidth);
+                    } else
+                    {
+                        //Debug.Log("BLOCKED " + k + ", " + ind);
+                    }
                 }
             }
             if (reallyUsed)
@@ -619,11 +691,18 @@ namespace HomeBuilder.Designing
                     //{
                         for (int j = 0; j < rMatrix.Length; j++)
                         {
-                            if (i >= rMatrix[j].Length) continue;
+                            int[] index = GetAnalogForCol(x, i, j);
 
-                            if (IsInYRange(rMatrix[j][i], rMatrix[x][y]) && (elements == null || !elements.Contains(new Vector2(j, i))))
+                            for (int l = 0; l < index.Length; l++)
                             {
-                                GetAllElementsInvolvedInWidthChange(j, i, elements);
+
+                                int ind = index[l];
+                                if (ind >= rMatrix[j].Length) continue;
+
+                                if (IsInYRange(rMatrix[j][ind], rMatrix[x][y]) && (elements == null || !elements.Contains(new Vector2(j, ind))))
+                                {
+                                    GetAllElementsInvolvedInWidthChange(j, ind, elements);
+                                }
                             }
                         }
                     //}
@@ -635,6 +714,27 @@ namespace HomeBuilder.Designing
             }
 
             return elements;
+        }
+
+        int[] GetAnalogForCol(int x, int y, int j, bool hz = false)
+        {
+            if (rMatrix[x].Length == rMatrix[j].Length || (hz && y < rMatrix[j].Length)) return new int[] { y };
+            if (y >= rMatrix[x].Length) return new int[] { rMatrix[x].Length - 1 };
+            List<int> res = new List<int>();
+            for (int i = 0; i < rMatrix[j].Length; i++)
+            {
+                if (IsInXRange(rMatrix[x][y], rMatrix[j][i]))
+                {
+                    if (res.Count > 0 && x == 1 && y == 1 && j == 2)
+                    {
+                        bool whaaaat = IsInXRange(rMatrix[x][y], rMatrix[j][i]);
+                        Debug.Log("SecondComming");
+                    }
+                    res.Add(i);
+                }
+            }
+            if (res.Count > 0) return res.ToArray();
+            return y < rMatrix[j].Length ? new int[] { y } : new int[] { rMatrix[j].Length - 1 };
         }
 
         bool[][] GetBoolMatrix(Vector2[] vectors)
@@ -656,34 +756,6 @@ namespace HomeBuilder.Designing
                 }
             }
             return res;
-        }
-
-        bool IsInXRange(Rect r1, Rect r2)
-        {
-            if (r1.xMin >= r2.xMin && r1.xMin < r2.xMax)
-            {
-                return true;
-            }
-            if (r1.xMax > r2.xMin && r1.xMax <= r2.xMax)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        bool IsInYRange(Rect r1, Rect r2)
-        {
-            if (r1.yMin >= r2.yMin && r1.yMin < r2.yMax)
-            {
-                return true;
-            }
-            if (r1.yMax > r2.yMin && r1.yMax < r2.yMax)
-            {
-                return true;
-            }
-
-            return false;
         }
 
         public bool Remove(LayoutElement element)
@@ -902,24 +974,68 @@ namespace HomeBuilder.Designing
 
         float GetY(float x, float width, List<Rect> upperLevel)
         {
-            float y1 = 0,
-                    y2 = 0;
+            float y = 0;
+
+            float x1 = x,
+                    x2 = x + width;
+
 
             int l = upperLevel.Count;
             for (int i = 0; i < l; i++)
             {
-                if (upperLevel[i].xMin <= x && upperLevel[i].xMax > x)
+                if (IsInXRange(x1, x2, upperLevel[i].xMin, upperLevel[i].xMax))
                 {
-                        y1 = upperLevel[i].yMax;
-                }
-                if (upperLevel[i].xMin < x + width && upperLevel[i].xMax >= x + width)
-                {
-                        y2 = upperLevel[i].yMax;
+                    y = Mathf.Max(y, upperLevel[i].yMax);
                 }
             }
 
-            return Mathf.Max(y1, y2);
+            return y;
         }
+
+        bool IsInXRange(float x11, float x12, float x21, float x22)
+        {
+            float tX = x21;
+            while (tX < x22)
+            {
+                if (tX > x11 && tX < x12) return true;
+                tX += 1f;
+            }
+            return false;
+        }
+
+        bool IsInRange(float x11, float x12, float x21, float x22)
+        {
+            float tX = x21;
+            while (tX < x22)
+            {
+                if (tX == x21)
+                {
+                    if (tX >= x11 && tX < x12) return true;
+                }
+                else
+                {
+                    if (tX > x11 && tX <= x12) return true;
+                }
+                tX += 0.1f;
+            }
+            return false;
+        }
+
+        bool IsInXRange(Rect r1, Rect r2)
+        {
+            return IsInRange(RoundTo100(r1.xMin), RoundTo100(r1.xMax) , RoundTo100(r2.xMin), RoundTo100(r2.xMax));
+        }
+
+        float RoundTo100 (float value)
+        {
+            return Mathf.RoundToInt(value * 100f) / 100f;
+        }
+
+        bool IsInYRange(Rect r1, Rect r2)
+        {
+            return IsInRange(RoundTo100(r1.yMin), RoundTo100(r1.yMax), RoundTo100(r2.yMin), RoundTo100(r2.yMax));
+        }
+
 
         float[] GetAppSize(List<Rect>[] rects)
         {

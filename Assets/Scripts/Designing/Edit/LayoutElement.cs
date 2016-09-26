@@ -62,12 +62,14 @@ namespace HomeBuilder.Designing
             }
         }
 
+        float rounder = 100;
+
         public void SetSize(float w, float h, bool force = false, bool round = true)
         {
             if (round)
             {
-                w = Mathf.RoundToInt(w * 100f ) / 100f;
-                h = Mathf.RoundToInt(h * 100f ) / 100f;
+                w = Mathf.RoundToInt(w * rounder) / rounder;
+                h = Mathf.RoundToInt(h * rounder) / rounder;
             }
 
             if (force)
