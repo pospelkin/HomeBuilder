@@ -6,7 +6,7 @@ namespace HomeBuilder.Designing
     public class LayoutElement
     {
 
-        readonly public Cube cube;
+        //readonly public Cube cube;
         readonly public ModuleInfo info;
 
         float width, height;
@@ -18,9 +18,9 @@ namespace HomeBuilder.Designing
 
         public int i, j;
 
-        public LayoutElement(Cube c, ModuleInfo i, Layout l)
+        public LayoutElement(/*Cube c, */ModuleInfo i, Layout l)
         {
-            cube = c;
+            //cube = c;
             info = i;
             layout = l;
         }

@@ -33,7 +33,7 @@ namespace HomeBuilder.History
 
         public void SetSquare(float number)
         {
-            square.text = "" + number;
+            square.text = "" + number + " m2";
         }
 
         public void SetAppartment(Appartment app)
@@ -41,6 +41,20 @@ namespace HomeBuilder.History
             this.app = app;
 
             SetSquare(app.GetSquare());
+            Sprite sprite = null;
+            switch (app.GetStyle())
+            {
+                    case Configuration.Appartment.Styles.CLASSIC:
+                    sprite = Resources.Load<Sprite>(Assets.GetInstance().sprites.styleClassic);
+                    break;
+                    case Configuration.Appartment.Styles.MODERN:
+                    sprite = Resources.Load<Sprite>(Assets.GetInstance().sprites.styleModern);
+                    break;
+                    case Configuration.Appartment.Styles.OLD:
+                    sprite = Resources.Load<Sprite>(Assets.GetInstance().sprites.styleOld);
+                    break;
+            }
+            SetImage(sprite);
         } 
 
         public Appartment GetAppartment()

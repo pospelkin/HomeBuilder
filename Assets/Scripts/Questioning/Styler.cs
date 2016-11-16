@@ -85,7 +85,7 @@ namespace HomeBuilder.Questioning
                     styles.Add(new Style(Configuration.Appartment.Styles.CLASSIC, Resources.Load<Sprite>(Assets.GetInstance().sprites.bedroomStyleClassic)));
                     styles.Add(new Style(Configuration.Appartment.Styles.OLD, Resources.Load<Sprite>(Assets.GetInstance().sprites.bedroomStyleOld)));
                     break;
-                case "Guestroom":
+                case "Hall":
                     styles.Add(new Style(Configuration.Appartment.Styles.MODERN, Resources.Load<Sprite>(Assets.GetInstance().sprites.hallStyleModern)));
                     styles.Add(new Style(Configuration.Appartment.Styles.CLASSIC, Resources.Load<Sprite>(Assets.GetInstance().sprites.hallStyleClassic)));
                     styles.Add(new Style(Configuration.Appartment.Styles.OLD, Resources.Load<Sprite>(Assets.GetInstance().sprites.hallStyleOld)));

@@ -10,9 +10,6 @@ namespace HomeBuilder.Designing
 
         public Canvas canvas;
         public Transform container;
-        Button removeB {
-            get { return GetComponentInChildren<Button>(); }
-        }
 
         Layout layout;
         List<PlanRoom> plans = null;
@@ -27,9 +24,19 @@ namespace HomeBuilder.Designing
             l.onChange += UpdateAll;
         }
 
+        public void SetContainer(Transform c)
+        {
+            this.container = c;
+        }
+
+        public void SetCanvas(Canvas c)
+        {
+            this.canvas = c;
+        }
+
         public void TurnOn()
         {
-            container.gameObject.SetActive(true);
+            container.parent.gameObject.GetComponent<CanvasGroup>().alpha = 1;
 
             if (plans == null)
             {
@@ -39,7 +46,7 @@ namespace HomeBuilder.Designing
 
         public void TurnOff()
         {
-            container.gameObject.SetActive(false);
+            container.parent.gameObject.GetComponent<CanvasGroup>().alpha = 0;
         }
 
         void Start()
@@ -82,7 +89,9 @@ namespace HomeBuilder.Designing
 
         float GetCoef(LayoutElement el)
         {
-            return Mathf.Min( Screen.width, Screen.height) / 30f;
+            float height = layout.GetAppSize()[1];
+            
+            return (1536) * 0.60f / height;
         }
 
         PlanRoom CreatePlan(LayoutElement element)
@@ -98,8 +107,6 @@ namespace HomeBuilder.Designing
 
         public void UpdateControls()
         {
-            removeB.interactable = selected != null;
-
             int length = plans.Count;
             for (int i = 0; i < length; i++)
             {

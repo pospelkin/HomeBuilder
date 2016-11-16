@@ -11,10 +11,11 @@ namespace HomeBuilder
         
         public class Scenes
         {
-            readonly static public string menuScene = "Menu";
-            readonly static public string questioningScene = "Questioning";
+            readonly static public string menuScene     = "Menu";
+            readonly static public string styleScene    = "Style";
+            readonly static public string modulesScene  = "Modules";
             readonly static public string designingScene = "Designing";
-            readonly static public string historyScene = "History";
+            readonly static public string historyScene   = "History";
         }
 
         public class Appartment
@@ -42,9 +43,27 @@ namespace HomeBuilder
             readonly static public ModuleParams[] approvedModules = new ModuleParams[] {
                 new ModuleParams("Kitchen"   , 8,    2, 4, Color.red, Assets.GetInstance().prefabs.redCube),
                 new ModuleParams("Bathroom" , 6,    2, 3, Color.green, Assets.GetInstance().prefabs.greenCube),
-                new ModuleParams("Guestroom", 12,   3, 4, Color.blue, Assets.GetInstance().prefabs.blueCube),
+                new ModuleParams("Hall", 12,   3, 4, Color.blue, Assets.GetInstance().prefabs.blueCube),
                 new ModuleParams("Bedroom"  , 16,   4, 4, Color.gray, Assets.GetInstance().prefabs.greyCube)
             };
+
+            public static ModuleParams GetModuleFor(string module)
+            {
+                switch (module)
+                {
+                    case "Kitchen":
+                        return new ModuleParams("Kitchen", 8, 2, 4, Color.red, Assets.GetInstance().prefabs.redCube);
+                    case "Bathroom":
+                        return new ModuleParams("Bathroom", 6, 2, 3, Color.green, Assets.GetInstance().prefabs.greenCube);
+                    case "Hall":
+                        return new ModuleParams("Hall", 12, 3, 4, Color.blue, Assets.GetInstance().prefabs.blueCube);
+                    case "Bedroom":
+                        return new ModuleParams("Bedroom", 16, 4, 4, Color.gray, Assets.GetInstance().prefabs.greyCube);
+                    case "Floors":
+                        return new ModuleParams("Floors", 0, 0, 0, Color.gray, Assets.GetInstance().prefabs.greyCube);
+                }
+                return null;
+            }
 
             public class ModuleParams
             {

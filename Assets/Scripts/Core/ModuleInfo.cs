@@ -7,6 +7,7 @@ namespace HomeBuilder.Core
     {
 
         string  name;
+        private bool _styleSet = false;
         Configuration.Appartment.Styles         style;
         Configuration.Appartment.ModuleParams   param;
 
@@ -14,9 +15,11 @@ namespace HomeBuilder.Core
         float height    = -1;
         float x         = -1;
         float y         = -1;
+        int   floor     = -1;
 
         public ModuleInfo(string name)
         {
+            _styleSet = false;
             this.name = name;
         }
 
@@ -42,8 +45,24 @@ namespace HomeBuilder.Core
             this.y = y;
         }
 
+        public void SetFloor(int floor)
+        {
+            this.floor = floor;
+        }
+
+        public void ResetStyle()
+        {
+            _styleSet = false;
+        }
+
+        public bool IsStyleSet()
+        {
+            return _styleSet;
+        }
+
         public void SetStyle(Configuration.Appartment.Styles style)
         {
+            _styleSet  = true;
             this.style = style;
         }
 
@@ -54,7 +73,7 @@ namespace HomeBuilder.Core
 
         public bool IsPositioned()
         {
-            return x >= 0 && y >= 0;
+            return x >= 0 && y >= 0 && floor >= 0;
         }
 
         public bool IsSized()
@@ -70,6 +89,11 @@ namespace HomeBuilder.Core
         public float GetSquare()
         {
             return width * height;
+        }
+
+        public int GetFloor()
+        {
+            return floor;
         }
 
         public float[] GetSize()

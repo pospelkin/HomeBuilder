@@ -1,7 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeBuilder.CSharp.Plugins", "HomeBuilder.CSharp.Plugins.csproj", "{874925D6-E8BB-0491-7E17-B175456287E0}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeBuilder.CSharp", "HomeBuilder.CSharp.csproj", "{AE9FB484-97A9-ED8F-0786-12C9F3CDEDC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeBuilder.CSharp.Editor", "HomeBuilder.CSharp.Editor.csproj", "{F30FBFDB-0BC1-87B7-166A-B3D076F3CBA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +13,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{874925D6-E8BB-0491-7E17-B175456287E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{874925D6-E8BB-0491-7E17-B175456287E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{874925D6-E8BB-0491-7E17-B175456287E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{874925D6-E8BB-0491-7E17-B175456287E0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AE9FB484-97A9-ED8F-0786-12C9F3CDEDC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AE9FB484-97A9-ED8F-0786-12C9F3CDEDC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE9FB484-97A9-ED8F-0786-12C9F3CDEDC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE9FB484-97A9-ED8F-0786-12C9F3CDEDC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F30FBFDB-0BC1-87B7-166A-B3D076F3CBA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F30FBFDB-0BC1-87B7-166A-B3D076F3CBA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F30FBFDB-0BC1-87B7-166A-B3D076F3CBA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F30FBFDB-0BC1-87B7-166A-B3D076F3CBA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

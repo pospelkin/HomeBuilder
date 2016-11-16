@@ -10,147 +10,82 @@ namespace HomeBuilder.Questioning
     public class Inquirer : MonoBehaviour
     {
 
+        public ScreenController screen;
+
         public Button nextButton;
         public Button prevButton;
-        public Text caption;
 
-        public Styler styler;
-        public Styler stylerOnly;
         public Moduler moduler;
 
-        int step = 0;
-        Appartment app;
-        List<ModuleInfo> modules;
+        private Appartment       _app;
 
         public void Next()
         {
             if (!IsReadyToProceed()) return;
-            step++;
 
-            UpdateStep();
+            Moduler.ModuleInfo[] modules = moduler.GetModules();
+            for (int i = 0; i < modules.Length; i++)
+            {
+                int length = modules[i].count;
+                if (modules[i].name == "Floors")
+                {
+                    _app.SetFloors(length);
+                }
+                else
+                {
+                    for (int j = 0; j < length; j++)
+                    {
+                        ModuleInfo module = new ModuleInfo(modules[i].name);
+                        module.SetParams(modules[i].param);
+                        _app.AddModule(module);
+                    }
+                }
+            }
+
+            Master.FLOW  = true;
+            Master.SLIDE = true;
+
+            Master.GetInstance().SetCurrentModule(_app.GetModules()[0]);
+            screen.OpenStyle();
         }
 
         public void Prev()
         {
-            step--;
+            Master.FLOW  = false;
+            Master.SLIDE = true;
 
-            UpdateStep();
+            _app.ResetStyle();
+
+            screen.OpenStyle();
+        }
+
+        public void Home()
+        {
+            Master.FLOW  = false;
+            Master.SLIDE = true;
+
+            screen.OpenHistory();
         }
 
         void Start()
         {
-            app     = new Appartment("New Appartment", 0);
-            step    = 0;
-            UpdateStep();
-        }
+            _app     = Master.GetInstance().GetCurrent();
 
-        void UpdateStep()
-        {
-            if (step < 0)
-            {
-                SceneManager.LoadScene(Configuration.Scenes.menuScene);
-                return;
-            }
-
-            if (step == 0)
-            {
-                prevButton.GetComponentInChildren<Text>().text = "Menu";
-            } else
-            {
-                prevButton.GetComponentInChildren<Text>().text = "Prev";
-            }
-
-            switch (step)
-            {
-                case 0:
-                    StartStyler();
-                    break;
-                case 1:
-                    app.SetStyle(styler.GetStyle().name);
-                    app.SetSquare(styler.GetSize());
-
-                    StartModuler();
-                    break;
-                case 2:
-                    Moduler.ModuleInfo[] ms = moduler.GetModules();
-                    for (int i = 0; i < ms.Length; i++)
-                    {
-                        for (int j = 0; j < ms[i].count; j++)
-                        {
-                            ModuleInfo info = new ModuleInfo(ms[i].name);
-                            info.SetParams(ms[i].param);
-
-                            modules.Add(info);
-                        }
-                    }
-
-                    StartStylerForModule(0);
-                    break;
-                default:
-                    modules[step - 3].SetStyle(stylerOnly.GetStyle().name);
-
-                    StartStylerForModule(step - 2);
-                    break;
-            }
-        }
-
-        void StartStyler()
-        {
-            TurnOn(styler.gameObject);
-
-            caption.text = "Home Style";
-            styler.SetStyles();
-            styler.SetMinMax(Configuration.Appartment.minSquare, Configuration.Appartment.maxSquare);
+            StartModuler();
         }
 
         void StartModuler()
         {
-            TurnOn(moduler.gameObject);
-
-            caption.text = "Select Modules";
-
-            moduler.SetLimits(app);
-            modules = new List<ModuleInfo>();
-        }
-
-        void StartStylerForModule(int index)
-        {
-            if (index >= modules.Count)
-            {
-                Finish();
-                return;
-            }
-
-            TurnOn(stylerOnly.gameObject);
-
-            stylerOnly.SetStyles(modules[index].GetName());
-            caption.text = "Module Style: " + modules[index].GetName();
+            ModuleInfo[] modules = _app.GetModules();
+            _app.ResetModules();
+            moduler.SetLimits(_app);
+            moduler.SetState(modules);
         }
 
         bool IsReadyToProceed()
         {
-            return step != 1 || (moduler.GetTotalCount() > 0);
+            return moduler.GetTotalCount() > 0;
         }
 
-        void TurnOn(GameObject obj)
-        {
-            moduler     .gameObject.SetActive(false);
-            styler      .gameObject.SetActive(false);
-            stylerOnly  .gameObject.SetActive(false);
-
-            obj.SetActive(true);
-
-        }
-
-        void Finish()
-        {
-            for (int i = 0; i < modules.Count; i++)
-            {
-                app.AddModule(modules[i]);
-            }
-
-            Master.GetInstance().SetCurrent(app);
-            SceneManager.LoadScene(Configuration.Scenes.designingScene);
-        }
     }
 }

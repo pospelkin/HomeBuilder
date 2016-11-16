@@ -23,8 +23,11 @@ namespace HomeBuilder.Designing
         public DragOperator left;
         public DragOperator right;
 
+        public GameObject seleted;
+
         public void SetActive(bool active)
         {
+            seleted.SetActive(active);
             leftUp.gameObject.SetActive(active);
             leftBottom.gameObject.SetActive(active);
             rightUp.gameObject.SetActive(active);

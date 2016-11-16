@@ -55,6 +55,66 @@ namespace HomeBuilder
 #endif
         }
 
+        //private void ControlTouch()
+        //{
+        //    if (Input.touchCount == 2)
+        //    {
+        //        Touch touchZero = Input.GetTouch(0);
+        //        Touch touchOne = Input.GetTouch(1);
+
+        //        if (!doubleTouchStarted)
+        //        {
+        //            Vector2 dPos = touchZero.position - touchOne.position;
+        //            oldAngle = getTwistAngle(touchZero, touchOne);
+        //        }
+        //        doubleTouchStarted = true;
+
+        //        float newAngle = getTwistAngle(touchZero, touchOne);
+        //        float twist = Mathf.DeltaAngle(newAngle, oldAngle) * 180 / Mathf.PI;
+        //        oldAngle = newAngle;
+
+        //        float zoom = getZoomLength(touchZero, touchOne);
+
+        //        float absZ = Mathf.Abs(zoom * 1f);
+
+        //        if (Mathf.Abs(twist) > tRotateSensibility)
+        //        {
+        //            gCamera.RotateHorizontal(-twist);
+
+        //            gCamera.UpdatePosition();
+        //        }
+        //        else if (absZ > tSensibility)
+        //        {
+        //            if (fixedCam)
+        //            {
+        //                gCamera.RotateVertical(zoom * tRotateRatio);
+        //            }
+        //            else {
+        //                gCamera.Zoom(zoom * tZoomRatio);
+        //            }
+
+        //            gCamera.UpdatePosition();
+        //        }
+
+        //    }
+        //    else if (Input.touchCount == 1 && fixedCam == false)
+        //    {
+        //        doubleTouchStarted = false;
+
+        //        Touch touch = Input.GetTouch(0);
+
+        //        if (Mathf.Abs(touch.deltaPosition.x) > tSensibility
+        //            || Mathf.Abs(touch.deltaPosition.y) > tSensibility)
+        //        {
+        //            gCamera.Move(touch.deltaPosition.x / 25, touch.deltaPosition.y / 25);
+        //        }
+        //        gCamera.UpdatePosition();
+        //    }
+        //    else {
+        //        doubleTouchStarted = false;
+        //    }
+        //}
+
         private void ControlTouch()
         {
             if (Input.touchCount == 2)
@@ -89,7 +149,8 @@ namespace HomeBuilder
                     {
                         gCamera.RotateVertical(zoom * tRotateRatio);
                     }
-                    else {
+                    else
+                    {
                         gCamera.Zoom(zoom * tZoomRatio);
                     }
 
@@ -97,20 +158,32 @@ namespace HomeBuilder
                 }
 
             }
-            else if (Input.touchCount == 1 && fixedCam == false)
+            else if (Input.touchCount == 1)
             {
                 doubleTouchStarted = false;
 
                 Touch touch = Input.GetTouch(0);
 
-                if (Mathf.Abs(touch.deltaPosition.x) > tSensibility
-                    || Mathf.Abs(touch.deltaPosition.y) > tSensibility)
-                {
-                    gCamera.Move(touch.deltaPosition.x / 25, touch.deltaPosition.y / 25);
-                }
+                //if (fixedCam == false)
+                //{
+                //    if (Mathf.Abs(touch.deltaPosition.x) > tSensibility
+                //        || Mathf.Abs(touch.deltaPosition.y) > tSensibility)
+                //    {
+                //        gCamera.Move(touch.deltaPosition.x / 25, touch.deltaPosition.y / 25);
+                //    }
+                //    gCamera.UpdatePosition();
+                //}
+                //else
+                //{
+
+                gCamera.RotateHorizontal(touch.deltaPosition.x * tZoomRatio);
+                gCamera.RotateVertical(touch.deltaPosition.y * tZoomRatio);
+
                 gCamera.UpdatePosition();
+                //}
             }
-            else {
+            else
+            {
                 doubleTouchStarted = false;
             }
         }

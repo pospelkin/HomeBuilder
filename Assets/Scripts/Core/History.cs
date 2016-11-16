@@ -22,17 +22,28 @@ namespace HomeBuilder.Core
 
         public void Save(string descr, Appartment app)
         {
-            Memo memo = new Memo(GetUniqueID());
+            Memo memo = null;
+            foreach (Memo m in memories)
+            {
+                if (m.appartment.id == app.id)
+                {
+                    memo = m;
+                    break;
+                }
+            }
+            if (memo == null)
+            {
+                memo = new Memo();
+            }
+            else
+            {
+                memories.Remove(memo);
+            }
 
             memo.description    = descr;
             memo.appartment     = app;
 
             memories.Add(memo);
-        }
-
-        int GetUniqueID()
-        {
-            return id++;
         }
 
         public void SimulateHistory()
@@ -45,14 +56,11 @@ namespace HomeBuilder.Core
 
         public class Memo
         {
-            readonly public int id;
-
             public string       description;
             public Appartment   appartment;
 
-            public Memo(int id)
+            public Memo()
             {
-                this.id = id;
             }
         }
 

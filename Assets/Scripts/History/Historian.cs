@@ -8,12 +8,20 @@ namespace HomeBuilder.History
     public class Historian : MonoBehaviour
     {
 
-        public Transform container;
+        public Transform        container;
+        public ScreenController screen;
+
         List<Note> notes;
 
-        public void OnMenu()
+        public void CreateNewProject()
         {
-            SceneManager.LoadScene(Configuration.Scenes.menuScene);
+            Master.FLOW  = true;
+            Master.SLIDE = true;
+
+            Appartment appartment = new Appartment("New project", Designer.GetId());
+            Master.GetInstance().SetCurrent(appartment);
+
+            screen.OpenStyle();
         }
 
         void Start()
@@ -43,10 +51,16 @@ namespace HomeBuilder.History
 
         void OnNoteTriggered(Note note)
         {
-            Debug.Log("Note #" + note.GetId() + "is triggered.");
-
             Master.GetInstance().SetCurrent(note.GetAppartment());
-            SceneManager.LoadScene(Configuration.Scenes.designingScene);
+
+            Master.SLIDE = false;
+
+            screen.OpenDesigning();
+        }
+
+        void OnDestroy()
+        {
+            Note.onTriggered -= OnNoteTriggered;
         }
     }
 }

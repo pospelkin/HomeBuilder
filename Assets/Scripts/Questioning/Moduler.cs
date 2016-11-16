@@ -52,12 +52,26 @@ namespace HomeBuilder.Questioning
             }
         }
 
+        public void SetState(Core.ModuleInfo[] appModules)
+        {
+            for (int i = 0; i < modules.Length; i++)
+            {
+                int count = 0;
+                foreach (Core.ModuleInfo m in appModules)
+                {
+                    if (m.GetName().Equals(modules[i].main.GetName())) count++;
+                }
+                modules[i].main.SetCount(count);
+            }
+        }
+
         public int GetTotalCount()
         {
             int count = 0;
 
             for (int i = 0; i < modules.Length; i++)
             {
+                if (modules[i].name.Contains("Floors")) continue;
                 count += modules[i].main.count;
             }
 
@@ -70,7 +84,13 @@ namespace HomeBuilder.Questioning
 
             for (int i = 0; i < modules.Length; i++)
             {
-                sqaure += (int) (modules[i].main.count * (modules[i].IsExtended() ? modules[i].square.count : modules[i].GetParams().minSquare));
+                if (modules[i].IsExtended())
+                {
+                    sqaure += modules[i].main.count * modules[i].square.count;
+                } else
+                {
+                    sqaure += (int)(modules[i].main.count * modules[i].GetParams().minSquare);
+                }
             }
 
             return sqaure;
@@ -78,17 +98,23 @@ namespace HomeBuilder.Questioning
 
         void Start()
         {
-            modules = new Module[Configuration.Appartment.approvedModules.Length];
             for (int i = 0; i < modules.Length; i++)
             {
-                Configuration.Appartment.ModuleParams p = Configuration.Appartment.approvedModules[i];
-                GameObject obj = Instantiate(Resources.Load(Assets.GetInstance().prefabs.moduleS), content) as GameObject;
-                obj.transform.localScale = new Vector3(1, 1, 1);
-                obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, 0);
-
-                modules[i] = obj.GetComponent<Module>();
+                Configuration.Appartment.ModuleParams p = Configuration.Appartment.GetModuleFor(modules[i].GetName());
                 modules[i].SetModulerAndParams(this, p);
             }
+
+            //modules = new Module[Configuration.Appartment.approvedModules.Length];
+            //for (int i = 0; i < modules.Length; i++)
+            //{
+            //    Configuration.Appartment.ModuleParams p = Configuration.Appartment.approvedModules[i];
+            //    GameObject obj = Instantiate(Resources.Load(Assets.GetInstance().prefabs.moduleS), content) as GameObject;
+            //    obj.transform.localScale = new Vector3(1, 1, 1);
+            //    obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, 0);
+
+            //    modules[i] = obj.GetComponent<Module>();
+            //    modules[i].SetModulerAndParams(this, p);
+            //}
         }
 
         public class ModuleInfo

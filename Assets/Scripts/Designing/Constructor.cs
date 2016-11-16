@@ -4,6 +4,8 @@ using System.Collections;
 using HomeBuilder.Core;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using System.Linq;
+using DG.Tweening;
 
 namespace HomeBuilder.Designing
 {
@@ -12,23 +14,47 @@ namespace HomeBuilder.Designing
 
         public GCameraController cameraController;
         public Transform mainTransform;
-        public Editor editor;
+        public Transform[] containers;
+        public Canvas canvas;
         public Button toggler;
+        public InputHandler input;
+        public ScreenController screen;
 
         float[] oldValues = new float[] { 0, 0, 0 };
 
-        Layout      layout;
+        Editor[]      editors;
+        Layout[]      layouts;
+        Appartment[]  appartments;
         Appartment  appartment;
-        List<Cube>  cubes;
+
+        private int current = 0;
+        //List<Cube>  cubes;
 
         public void Menu()
         {
-            SceneManager.LoadScene(Configuration.Scenes.menuScene);
+            Master.FLOW  = false;
+            Master.SLIDE = false;
+
+            screen.OpenHistory();
+        }
+
+        public void EditModules()
+        {
+            Master.FLOW = false;
+            Master.SLIDE = false;
+
+            screen.OpenModules();
         }
 
         public void Save()
         {
-            layout.Apply();
+            for (int i = 0; i < layouts.Length; i++)
+            {
+                layouts[i].Apply();
+                layouts[i].appartment.SetSaved();
+            }
+            appartment.SavePlan(layouts);
+            appartment.SetSaved();
             Master.GetInstance().history.Save(appartment.GetName(), appartment);
         }
 
@@ -50,7 +76,10 @@ namespace HomeBuilder.Designing
 
                 cameraController.gCamera.UpdatePosition();
 
-                editor.TurnOn();
+                foreach (Editor editor in editors)
+                {
+                    editor.TurnOn();
+                }
                 toggler.GetComponentInChildren<Text>().text = "View";
             } else
             {
@@ -62,7 +91,10 @@ namespace HomeBuilder.Designing
 
                 cameraController.gCamera.UpdatePosition();
 
-                editor.TurnOff();
+                foreach (Editor editor in editors)
+                {
+                    editor.TurnOff();
+                }
                 toggler.GetComponentInChildren<Text>().text = "Modify";
             }
         }
@@ -75,10 +107,35 @@ namespace HomeBuilder.Designing
                 Menu();
             }
 
-            layout = CreateLayout();
-            layout.UpdatePositions();
+            if (!appartment.IsAllSet())
+            {
+                Master.GetInstance().designer.evaluate(appartment);
+            }
+            layouts = new Layout[appartment.GetFloors()];
+            for (int i = 0; i < layouts.Length; i++)
+            {
+                if (!appartment.IsSaved())
+                {
+                    layouts[i] = CreateLayout(appartment.GetFloor(i));
+                }
+                else
+                {
+                    layouts[i] = appartment.GetPlan(i);
+                }
+                
+                layouts[i].UpdatePositions();
+            }
+            editors = new Editor[appartment.GetFloors()];
+            for (int i = 0; i < editors.Length; i++)
+            {
+                GameObject obj = Instantiate(Resources.Load(Assets.GetInstance().prefabs.editor), transform) as GameObject;
+                editors[i] = obj.GetComponent<Editor>();
+                editors[i].SetContainer(containers[i]);
+                editors[i].SetCanvas(canvas);
+                editors[i].SetLayout(layouts[i]);
+            }
 
-            editor.SetLayout(layout);
+            editors[current].TurnOff();
         }
 
         void Update()
@@ -86,26 +143,79 @@ namespace HomeBuilder.Designing
             
         }
 
-        Layout CreateLayout()
+        void OnEnable()
         {
-            if (!appartment.IsAllSet())
+            input.onSwap += OnSwap;
+        }
+
+        void OnDisable()
+        {
+            input.onSwap -= OnSwap;
+        }
+
+        void OnSwap(Vector3 position, Vector3 shift)
+        {
+            if (cameraController.enabled) return;
+
+            bool flow = true;
+            Editor prev = editors[current];
+            if (shift.x < 0)
             {
-                Master.GetInstance().designer.evaluate(appartment);
+                current++;
+            }
+            else
+            {
+                flow = false;
+                current--;
             }
 
-            cubes = new List<Cube>();
-            ModuleInfo[] modules = appartment.GetModules();
-            for (int i = 0; i < modules.Length; i++)
-            {
-                cubes.Add(GetCube(modules[i].GetParams().asset));
-            }
+            if (current >= editors.Length) current = 0;
+            if (current < 0) current = editors.Length-1;
 
-            return new Layout(appartment, cubes.ToArray(), modules);
+            Editor next = editors[current];
+            if (next != prev)
+            {
+                AnimateChange(prev, next, flow);    
+            }
+        }
+
+        void AnimateChange(Editor prev, Editor next, bool flow = true)
+        {
+            RectTransform t1 = (RectTransform) prev.container;
+            RectTransform t2 = (RectTransform) next.container;
+
+            if (flow)
+            {
+                t1.DOAnchorPos(new Vector2(-2730, 0), 0.25f);
+                t2.anchoredPosition = new Vector2(2730, 0);
+                t2.DOAnchorPos(new Vector2(0, 0), 0.25f);
+            }
+            else
+            {
+                t1.DOAnchorPos(new Vector2(2730, 0), 0.25f);
+                t2.anchoredPosition = new Vector2(-2730, 0);
+                t2.DOAnchorPos(new Vector2(0, 0), 0.25f);
+            }
+        }
+
+        Layout CreateLayout(Appartment app)
+        {
+            //cubes = new List<Cube>();
+            ModuleInfo[] modules = app.GetModules();
+            //for (int i = 0; i < modules.Length; i++)
+            //{
+            //    cubes.Add(GetCube(modules[i].GetParams().asset));
+            //}
+
+            return new Layout(app, /*cubes.ToArray(), */modules);
         }
 
         void OnDestroy()
         {
-            layout.Destory();
+            foreach (Layout l in layouts)
+            {
+                l.Destory();
+            }
         }
 
         Cube GetCube(string prefab)

@@ -10,6 +10,10 @@ namespace HomeBuilder.Questioning
         public Counter width;
         public Counter height;
 
+        public bool fixesCount = false;
+        public int maxCount = 2;
+        public int minCount = 1;
+
         Configuration.Appartment.ModuleParams parameters;
         Moduler moduler;
 
@@ -28,6 +32,51 @@ namespace HomeBuilder.Questioning
 
         public void SetLimits()
         {
+            if (!fixesCount && moduler != null)
+            {
+                main.SetMax((int)Mathf.Min(main.count + moduler.countAvailable, Configuration.Appartment.maxModuleOfType));
+            }
+            else
+            {
+                main.SetMin(minCount);
+                main.SetMax(maxCount);
+            }
+
+            if (!IsExtended()) return;
+
+            if (square != null)
+            {
+                square.SetMin((int)parameters.minSquare);
+                square.SetMax(square.count + (int)(moduler.squareAvailable));
+            }
+
+            if (width != null && height != null)
+            {
+                if (square.count > 0)
+                {
+                    width.SetMin(1);
+                    height.SetMin(1);
+                    width.SetMax(1);
+                    height.SetMax(1);
+
+                    if (width.count < 1) width.SetCount(1);
+                    if (height.count < 1) height.SetCount(1);
+
+
+                    width.SetMax((int)(width.count + square.count / (float)height.count));
+                    height.SetMax((int)(height.count + square.count / (float)width.count));
+                }
+                else
+                {
+                    width.SetCount(0);
+                    height.SetCount(0);
+
+                    width.SetMin(0);
+                    height.SetMin(0);
+                    width.SetMax(0);
+                    height.SetMax(0);
+                }
+            }
         }
 
         public Configuration.Appartment.ModuleParams GetParams()
@@ -67,37 +116,7 @@ namespace HomeBuilder.Questioning
 
         void Update()
         {
-            main    .SetMax   ((int) Mathf.Min( main.count + moduler.countAvailable, Configuration.Appartment.maxModuleOfType) );
-
-            if (!IsExtended()) return;
-
-            square  .SetMin((int) parameters.minSquare);
-            square  .SetMax(square.count + (int) (moduler.squareAvailable));
-
-            if (square.count > 0)
-            {
-                width   .SetMin(1);
-                height  .SetMin(1);
-                width   .SetMax(1);
-                height  .SetMax(1);
-
-                if (width.count < 1)    width   .SetCount(1);
-                if (height.count < 1)   height  .SetCount(1);
-
-
-                width   .SetMax((int)   (width.count + square.count / (float) height.count));
-                height  .SetMax((int)   (height.count + square.count / (float) width.count));
-            } else
-            {
-                width   .SetCount(0);
-                height  .SetCount(0);
-
-                width   .SetMin(0);
-                height  .SetMin(0);
-                width   .SetMax(0);
-                height  .SetMax(0);
-            }
-
+            SetLimits();
         }
 
     }

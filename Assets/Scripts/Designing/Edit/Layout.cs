@@ -16,20 +16,20 @@ namespace HomeBuilder.Designing
         List<LayoutElement> elements;
         LayoutElement[][] eMatrix;
         Rect[][] rMatrix;
-        Cube[] cubes;
+        //Cube[] cubes;
         Fixer fixer;
 
-        public Layout(Appartment ap, Cube[] cubes, ModuleInfo[] infos)
+        public Layout(Appartment ap, /*Cube[] cubes, */ModuleInfo[] infos)
         {
             fixer       = new Fixer();
             appartment  = ap;
-            this.cubes  = cubes;
+            //this.cubes  = cubes;
 
-            fixer.Fix(appartment);
-            Restart(appartment, cubes, infos);
+            if (!appartment.IsSaved()) fixer.Fix(appartment);
+            Restart(appartment, /*cubes, */infos);
         }
 
-        void Restart(Appartment ap, Cube[] cubes, ModuleInfo[] infos)
+        void Restart(Appartment ap, /*Cube[] cubes, */ModuleInfo[] infos)
         {
             List<LayoutElement> elems = elements;
             if (elems == null)
@@ -43,7 +43,7 @@ namespace HomeBuilder.Designing
                     elem = elems[i];
                 } else
                 {
-                    elem = new LayoutElement(cubes[i], infos[i], this);
+                    elem = new LayoutElement(/*cubes[i], */infos[i], this);
                 }
                 elem.SetMinParams(
                     infos[i].GetParams().minWidth,
@@ -76,20 +76,20 @@ namespace HomeBuilder.Designing
                 elements[i2] = temp;
 
                 List<Cube> cs = new List<Cube>();
-                for (int i = 0; i < cubes.Length; i++)
-                {
-                    if (i == i1)
-                    {
-                        cs.Add(cubes[i2]);
-                    } else if (i == i2)
-                    {
-                        cs.Add(cubes[i1]);
-                    } else
-                    {
-                        cs.Add(cubes[i]);
-                    }
-                } 
-                cubes = cs.ToArray();
+                //for (int i = 0; i < cubes.Length; i++)
+                //{
+                //    if (i == i1)
+                //    {
+                //        cs.Add(cubes[i2]);
+                //    } else if (i == i2)
+                //    {
+                //        cs.Add(cubes[i1]);
+                //    } else
+                //    {
+                //        cs.Add(cubes[i]);
+                //    }
+                //} 
+                //cubes = cs.ToArray();
             }
 
             FixLayout();
@@ -154,15 +154,15 @@ namespace HomeBuilder.Designing
 
         void UpdateElementPosition(LayoutElement element)
         {
-            float width     = appartment.GetSize()[0];
-            float height    = appartment.GetSize()[1];
+            //float width     = appartment.GetSize()[0];
+            //float height    = appartment.GetSize()[1];
 
-            Cube cube = element.cube;
-            Vector2 size = element.GetSize();
-            cube.SetSize(size.x, size.y);
+            //Cube cube = element.cube;
+            //Vector2 size = element.GetSize();
+            //cube.SetSize(size.x, size.y);
 
-            Vector2 pos = element.GetPosition();
-            cube.SetPosition(-width / 2f + pos.x + size.x / 2f, -height / 2f + pos.y + size.y / 2f);
+            //Vector2 pos = element.GetPosition();
+            //cube.SetPosition(-width / 2f + pos.x + size.x / 2f, -height / 2f + pos.y + size.y / 2f);
         }
 
         void OnSizeChanged(LayoutElement element)
@@ -786,15 +786,15 @@ namespace HomeBuilder.Designing
                 }
             }
 
-            List<Cube> cs = new List<Cube>();
-            for (int i = 0; i < cubes.Length; i++)
-            {
-                if (cubes[i] != element.cube)
-                {
-                    cs.Add(cubes[i]);
-                }
-            }
-            cubes = cs.ToArray();
+            //List<Cube> cs = new List<Cube>();
+            //for (int i = 0; i < cubes.Length; i++)
+            //{
+            //    if (cubes[i] != element.cube)
+            //    {
+            //        cs.Add(cubes[i]);
+            //    }
+            //}
+            //cubes = cs.ToArray();
 
             int toDelete = -1;
 
@@ -847,14 +847,14 @@ namespace HomeBuilder.Designing
                 //list = list2;
             }
 
-            MonoBehaviour.Destroy(element.cube.gameObject);
+            //MonoBehaviour.Destroy(element.cube.gameObject);
 
             elements.Remove(element);
 
             appartment.RemoveModule(element.info);
 
             fixer.FixOnline(appartment, list, spares);
-            Restart(appartment, cubes, appartment.GetModules());
+            Restart(appartment, /*cubes, */appartment.GetModules());
 
             if (onChange != null) onChange();
 

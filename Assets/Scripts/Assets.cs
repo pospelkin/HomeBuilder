@@ -39,13 +39,15 @@ namespace HomeBuilder
             readonly public string moduleS   = "Prefabs/module_small_prefab";
             readonly public string planRoom  = "Prefabs/plan_room_prefab";
 
+            readonly public string editor    = "Prefabs/Editor";
+
         }
 
         public class SpriteAssets
         {
-            readonly public string styleModern = "Sprites/style_modern";
-            readonly public string styleClassic = "Sprites/style_classic";
-            readonly public string styleOld = "Sprites/style_old";
+            readonly public string styleModern = "Sprites/House/style_modern";
+            readonly public string styleClassic = "Sprites/House/style_classic";
+            readonly public string styleOld = "Sprites/House/style_old";
 
             readonly public string kitchenStyleModern = "Sprites/Kitchen/style_modern";
             readonly public string kitchenStyleClassic = "Sprites/Kitchen/style_classic";

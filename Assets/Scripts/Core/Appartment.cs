@@ -1,23 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using HomeBuilder.Designing;
 
 namespace HomeBuilder.Core
 {
     public class Appartment
     {
 
-        readonly int    id;
+        public readonly int    id;
         string          name;
         Configuration.Appartment.Styles style;
+        private Layout[] floorPlans = null;
+        private bool _styleSet = false;
         float           square;
         float           width;
         float           height;
+        int             floors = 1;
+        bool            saved = false;
 
         List<ModuleInfo> modules;
 
         public Appartment(string name, int id)
         {
+            _styleSet = false;
             this.id = id;
 
             SetName( name );
@@ -27,6 +33,55 @@ namespace HomeBuilder.Core
         public void SetSquare(float square)
         {
             this.square = square;
+        }
+
+        public void SetFloors(int value)
+        {
+            if (value < 1) return;
+
+            floors = value;
+        }
+
+        public bool IsSaved()
+        {
+            return saved;
+        }
+
+        public void SetSaved()
+        {
+            saved = true;
+        }
+
+        public void SavePlan(Layout[] apps)
+        {
+            floorPlans = apps;
+        }
+
+        public Layout GetPlan(int floor)
+        {
+            return floorPlans[floor];
+        }
+
+        public Appartment GetFloor(int floor)
+        {
+            Appartment app = new Appartment("Floor " + floor, floor);
+            app.SetFloors(1);
+            app.SetSquare(GetSquare() / GetFloors());
+            app.SetSize(GetSize()[0], GetSize()[1]);
+            app.SetStyle(GetStyle());
+
+            ModuleInfo[] modules = GetModules(floor);
+            for (int i = 0; i < modules.Length; i++)
+            {
+                app.AddModule(modules[i]);
+            }
+
+            return app;
+        }
+
+        public int GetFloors()
+        {
+            return floors;
         }
 
         public float GetSquare()
@@ -55,8 +110,29 @@ namespace HomeBuilder.Core
             return name;
         }
 
+        public bool IsStyleSet()
+        {
+            return _styleSet;
+        }
+
+        public bool IsAllStyleSet()
+        {
+            for (int i = 0; i < modules.Count; i++)
+            {
+                if (!modules[i].IsStyleSet()) return false;
+            }
+
+            return true;
+        }
+
+        public void ResetStyle()
+        {
+            _styleSet = false;
+        }
+
         public void SetStyle(Configuration.Appartment.Styles style)
         {
+            _styleSet = true;
             this.style = style;
         }
 
@@ -77,9 +153,26 @@ namespace HomeBuilder.Core
             modules.Remove(moduleInfo);
         }
 
+        public ModuleInfo[] GetModules(int floor)
+        {
+            List<ModuleInfo> mdls = new List<ModuleInfo>();
+
+            foreach (ModuleInfo mod in modules)
+            {
+                if (mod.GetFloor() == floor) mdls.Add(mod);
+            }
+
+            return mdls.ToArray();
+        }
+
         public ModuleInfo[] GetModules()
         {
             return modules.ToArray();
+        }
+
+        public void ResetModules()
+        {
+            modules.Clear();
         }
 
         public void Interchange(ModuleInfo m1, ModuleInfo m2)
