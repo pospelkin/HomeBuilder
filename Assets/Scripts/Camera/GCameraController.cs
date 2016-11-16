@@ -176,8 +176,8 @@ namespace HomeBuilder
                 //else
                 //{
 
-                gCamera.RotateHorizontal(touch.deltaPosition.x * tZoomRatio);
-                gCamera.RotateVertical(touch.deltaPosition.y * tZoomRatio);
+                gCamera.RotateHorizontal(touch.deltaPosition.x * tRotateRatio);
+                gCamera.RotateVertical(touch.deltaPosition.y * tRotateRatio);
 
                 gCamera.UpdatePosition();
                 //}

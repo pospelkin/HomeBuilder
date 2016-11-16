@@ -15,8 +15,10 @@ namespace HomeBuilder.Designing
         public GCameraController cameraController;
         public Transform mainTransform;
         public Transform[] containers;
+        public Text floorText;
         public Canvas canvas;
         public Button toggler;
+        public GameObject modules;
         public InputHandler input;
         public ScreenController screen;
 
@@ -81,6 +83,8 @@ namespace HomeBuilder.Designing
                     editor.TurnOn();
                 }
                 toggler.GetComponentInChildren<Text>().text = "View";
+                SetFloor();
+                modules.SetActive(true);
             } else
             {
                 SphereCamera cam = (SphereCamera)cameraController.gCamera;
@@ -96,6 +100,7 @@ namespace HomeBuilder.Designing
                     editor.TurnOff();
                 }
                 toggler.GetComponentInChildren<Text>().text = "Modify";
+                modules.SetActive(false);
             }
         }
 
@@ -196,6 +201,13 @@ namespace HomeBuilder.Designing
                 t2.anchoredPosition = new Vector2(-2730, 0);
                 t2.DOAnchorPos(new Vector2(0, 0), 0.25f);
             }
+
+            SetFloor();
+        }
+
+        void SetFloor()
+        {
+            floorText.text = "Floor " + (current + 1) + "/" + appartment.GetFloors();
         }
 
         Layout CreateLayout(Appartment app)

@@ -661,7 +661,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7c0eca10861bf84b88fefa38ea38798, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shift: 2730
+  shift: 2048
   input: {fileID: 485039924}
   images:
   - {fileID: 1966358403}
