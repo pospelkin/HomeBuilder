@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>Android:13</UnityBuildTarget>
     <UnityVersion>5.4.1f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -85,6 +87,12 @@
     <Reference Include="DOTweenPro">
       <HintPath>Assets\Demigiant\DOTweenPro\DOTweenPro.dll</HintPath>
     </Reference>
+    <Reference Include="Facebook.Unity">
+      <HintPath>Assets\FacebookSDK\Plugins\Facebook.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Facebook.Unity.Settings">
+      <HintPath>Assets\FacebookSDK\Plugins\Settings\Facebook.Unity.Settings.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="HomeBuilder.CSharp.Plugins.csproj">
@@ -94,6 +102,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Demigiant\DOTweenPro\DOTweenAnimation.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\ConsoleBase.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\LogView.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\MenuBase.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AccessTokenMenu.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AppEvents.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AppInvites.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AppLinks.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AppRequests.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\DialogShare.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\GameGroups.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\GraphRequest.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\MainMenu.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\Pay.cs" />
     <Compile Include="Assets\Scripts\Assets.cs" />
     <Compile Include="Assets\Scripts\Background.cs" />
     <Compile Include="Assets\Scripts\Camera\GCameraController.cs" />
@@ -127,24 +148,9 @@
     <Compile Include="Assets\Scripts\Questioning\StyleManager.cs" />
     <Compile Include="Assets\Scripts\Questioning\Styler.cs" />
     <Compile Include="Assets\Scripts\ScreenController.cs" />
+    <Compile Include="Assets\Scripts\Share\ShareManager.cs" />
     <Compile Include="Assets\Scripts\UI\ArtDirector.cs" />
     <Compile Include="Assets\Scripts\UI\Version.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Base\NPDemoBase.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Base\NPDisabledFeatureDemo.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Features\AddressBookDemo.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Features\BillingDemo.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Features\CloudServicesDemo.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Features\GameServicesDemo.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Features\MediaLibraryDemo.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Features\NetworkConnectivityDemo.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Features\NotificationDemo.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Features\RemoteNotificationTest.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Features\SharingDemo.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Features\TwitterDemo.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Features\UIDemo.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Features\UtilityDemo.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Features\WebViewDemo.cs" />
-    <Compile Include="Assets\VoxelBusters\NativePlugins\Demo\Scripts\Utility\Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Demigiant\DOTween\DOTween.XML" />
@@ -159,57 +165,8 @@
     <None Include="Assets\Demigiant\DemiLib\Core\DemiLib.xml" />
     <None Include="Assets\Demigiant\DemiLib\Core\Editor\DemiEditor.xml" />
     <None Include="Assets\Demigiant\readme_DOTweenPro.txt" />
-    <None Include="Assets\Plugins\Android\AndroidManifest_root_activity_settings_sample.txt" />
-    <None Include="Assets\Plugins\Android\NativePluginsAndroidReadMe.txt" />
-    <None Include="Assets\Plugins\Android\common_lib\AndroidManifest.xml" />
-    <None Include="Assets\Plugins\Android\native_plugins_lib\AndroidManifest.xml" />
-    <None Include="Assets\Plugins\Android\native_plugins_lib\proguard.txt" />
-    <None Include="Assets\Plugins\Android\native_plugins_lib\res\layout\np_progressbar_layout.xml" />
-    <None Include="Assets\Plugins\Android\native_plugins_lib\res\layout\np_webview_layout.xml" />
-    <None Include="Assets\Plugins\Android\native_plugins_lib\res\values-v11\styles.xml" />
-    <None Include="Assets\Plugins\Android\native_plugins_lib\res\values-v14\styles.xml" />
-    <None Include="Assets\Plugins\Android\native_plugins_lib\res\values\com_crashlytics_export_strings.xml" />
-    <None Include="Assets\Plugins\Android\native_plugins_lib\res\values\np_colors.xml" />
-    <None Include="Assets\Plugins\Android\native_plugins_lib\res\values\np_strings.xml" />
-    <None Include="Assets\Plugins\Android\native_plugins_lib\res\values\np_styles.xml" />
-    <None Include="Assets\Plugins\Android\native_plugins_lib\res\xml\nativeplugins_file_paths.xml" />
-    <None Include="Assets\Plugins\Android\play-services-measurement-8.4.0\AndroidManifest.xml" />
-    <None Include="Assets\Plugins\Android\play-services-measurement-8.4.0\R.txt" />
-    <None Include="Assets\Plugins\Android\play-services-measurement-8.4.0\proguard.txt" />
-    <None Include="Assets\Plugins\Android\twitter_lib\AndroidManifest.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\proguard.txt" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\drawable\tw__login_btn.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\drawable\tw__login_btn_default.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\drawable\tw__login_btn_default_light.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\drawable\tw__login_btn_disabled.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\drawable\tw__login_btn_light.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\drawable\tw__login_btn_pressed.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\drawable\tw__login_btn_pressed_light.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\drawable\tw__login_btn_text_color_light.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\drawable\tw__transparent.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\layout\tw__activity_oauth.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\layout\tw__activity_share_email.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-ar\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-de\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-en-rSS\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-en-rXX\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-es\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-fr\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-hdpi-v4\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-in\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-it\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-ja\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-ko\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-nl\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-pt\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-ru\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-sw720dp-v13\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-tr\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-xhdpi-v4\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values-xxhdpi-v4\values.xml" />
-    <None Include="Assets\Plugins\Android\twitter_lib\res\values\values.xml" />
-    <None Include="Assets\Plugins\Android\voxelbusters_utility_lib\AndroidManifest.xml" />
-    <None Include="Assets\Plugins\Android\youtube_lib\AndroidManifest.xml" />
+    <None Include="Assets\FacebookSDK\link.xml" />
+    <None Include="Assets\Plugins\Android\AndroidManifest.xml" />
     <None Include="Assets\Resources\Fonts\OFL.txt" />
     <None Include="Assets\Standard Assets\Cameras\CameraGuidelines.txt" />
     <None Include="Assets\Standard Assets\Characters\FirstPersonCharacter\FirstPersonCharacterGuidelines.txt" />
@@ -309,12 +266,6 @@
     <None Include="Assets\Standard Assets\Vehicles\Car\Shaders\DiffuseReflectiveShader.shader" />
     <None Include="Assets\Standard Assets\Vehicles\Car\Shaders\ReflectiveDiffuseSpec.shader" />
     <None Include="Assets\Standard Assets\Vehicles\Car\Shaders\ReflectiveDiffuseSpecTransp.shader" />
-    <None Include="Assets\Standard Assets\VoxelBusters\Common\Utility\ThirdParty\ExifLib\License.txt" />
-    <None Include="Assets\Standard Assets\VoxelBusters\NativePlugins\Readme.txt" />
-    <None Include="Assets\Standard Assets\VoxelBusters\NativePlugins\ReleaseNotes.txt" />
-    <None Include="Assets\Standard Assets\VoxelBusters\NativePlugins\XCodeModData.txt" />
-    <None Include="Assets\Standard Assets\VoxelBusters\NativePlugins\link.xml" />
-    <None Include="Assets\link.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

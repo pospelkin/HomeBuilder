@@ -7,12 +7,11 @@ namespace HomeBuilder
     {
 
         public static SphereCamera instance;
+        public Transform camTransform;
 
         public static void Disable() { if (instance != null) instance.enabled = false; }
         public static void Enable() { if (instance != null) instance.enabled = true; }
 
-        [HideInInspector]
-        public Transform camTransform;
 
         // Some constants for resetting
         public float r0 = 40,
@@ -47,7 +46,6 @@ namespace HomeBuilder
         void Awake()
         {
             instance = this;
-            camTransform = Camera.main.transform;
         }
 
         public void Reset()

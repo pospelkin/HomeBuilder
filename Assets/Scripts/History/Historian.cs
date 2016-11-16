@@ -55,6 +55,8 @@ namespace HomeBuilder.History
 
             Master.SLIDE = false;
 
+            Master.GetInstance().GetCurrent().SetEditing(false);
+
             screen.OpenDesigning();
         }
 

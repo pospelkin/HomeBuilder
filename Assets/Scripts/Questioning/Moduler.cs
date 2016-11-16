@@ -52,16 +52,23 @@ namespace HomeBuilder.Questioning
             }
         }
 
-        public void SetState(Core.ModuleInfo[] appModules)
+        public void SetState(Core.ModuleInfo[] appModules, int floors)
         {
             for (int i = 0; i < modules.Length; i++)
             {
-                int count = 0;
-                foreach (Core.ModuleInfo m in appModules)
+                if (modules[i].main.GetName() == "Floors")
                 {
-                    if (m.GetName().Equals(modules[i].main.GetName())) count++;
+                    modules[i].main.SetCount(floors);
                 }
-                modules[i].main.SetCount(count);
+                else
+                {
+                    int count = 0;
+                    foreach (Core.ModuleInfo m in appModules)
+                    {
+                        if (m.GetName().Equals(modules[i].main.GetName())) count++;
+                    }
+                    modules[i].main.SetCount(count);
+                }
             }
         }
 

@@ -17,7 +17,8 @@ namespace HomeBuilder.Core
         float           width;
         float           height;
         int             floors = 1;
-        bool            saved = false;
+        bool            saved   = false;
+        bool            editing = false;
 
         List<ModuleInfo> modules;
 
@@ -42,6 +43,30 @@ namespace HomeBuilder.Core
             floors = value;
         }
 
+        public bool IsEditing()
+        {
+            return editing;
+        }
+
+        public void SetEditing(bool value)
+        {
+            editing = value;
+            if (editing == false && IsSaved())
+            {
+                SetFloors(floorPlans.Length);
+
+                ResetModules();
+                for (int i = 0; i < floorPlans.Length; i++)
+                {
+                    ModuleInfo[] modules = floorPlans[i].appartment.GetModules();
+                    for (int j = 0; j < modules.Length; j++)
+                    {
+                        AddModule(modules[j]);
+                    }
+                }
+            }
+        }
+
         public bool IsSaved()
         {
             return saved;
@@ -55,6 +80,7 @@ namespace HomeBuilder.Core
         public void SavePlan(Layout[] apps)
         {
             floorPlans = apps;
+            editing    = false;
         }
 
         public Layout GetPlan(int floor)

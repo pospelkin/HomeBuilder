@@ -79,7 +79,7 @@ namespace HomeBuilder.Questioning
             ModuleInfo[] modules = _app.GetModules();
             _app.ResetModules();
             moduler.SetLimits(_app);
-            moduler.SetState(modules);
+            moduler.SetState(modules, _app.GetFloors());
         }
 
         bool IsReadyToProceed()

@@ -19,6 +19,7 @@ namespace HomeBuilder.Designing
         public Canvas canvas;
         public Button toggler;
         public GameObject modules;
+        public GameObject shareBtn;
         public InputHandler input;
         public ScreenController screen;
 
@@ -34,14 +35,19 @@ namespace HomeBuilder.Designing
 
         public void Menu()
         {
+            appartment.SetEditing(false);
+
             Master.FLOW  = false;
             Master.SLIDE = false;
 
             screen.OpenHistory();
         }
 
+
         public void EditModules()
         {
+            appartment.SetEditing(true);
+
             Master.FLOW = false;
             Master.SLIDE = false;
 
@@ -85,6 +91,7 @@ namespace HomeBuilder.Designing
                 toggler.GetComponentInChildren<Text>().text = "View";
                 SetFloor();
                 modules.SetActive(true);
+                shareBtn.SetActive(true);
             } else
             {
                 SphereCamera cam = (SphereCamera)cameraController.gCamera;
@@ -101,6 +108,7 @@ namespace HomeBuilder.Designing
                 }
                 toggler.GetComponentInChildren<Text>().text = "Modify";
                 modules.SetActive(false);
+                shareBtn.SetActive(false);
             }
         }
 
@@ -119,7 +127,7 @@ namespace HomeBuilder.Designing
             layouts = new Layout[appartment.GetFloors()];
             for (int i = 0; i < layouts.Length; i++)
             {
-                if (!appartment.IsSaved())
+                if (!appartment.IsSaved() || appartment.IsEditing())
                 {
                     layouts[i] = CreateLayout(appartment.GetFloor(i));
                 }

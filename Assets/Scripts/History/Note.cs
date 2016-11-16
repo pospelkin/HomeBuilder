@@ -33,7 +33,7 @@ namespace HomeBuilder.History
 
         public void SetSquare(float number)
         {
-            square.text = "" + number + " m2";
+            square.text = "" + Mathf.RoundToInt(number) + " m2";
         }
 
         public void SetAppartment(Appartment app)
