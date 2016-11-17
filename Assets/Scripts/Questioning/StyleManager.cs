@@ -101,11 +101,11 @@ namespace HomeBuilder.Questioning
             return Mathf.RoundToInt(slider.value);
         }
 
-        private Appartment  _app;
-        private bool        _isModule = false;
-        private List<Style> styles;
-        private int         _current = 0;
-        private ModuleInfo  _module;
+        private Appartment   _app;
+        private bool         _isModule = false;
+        private List<Style>  styles;
+        private int          _current = 0;
+        private ModuleInfo   _module;
 
         void Awake()
         {
@@ -190,48 +190,29 @@ namespace HomeBuilder.Questioning
         {
             styles = new List<Style>();
 
-            switch (module)
+            House.Style[] stls = null;
+            if (module == "")
             {
-                case "Kitchen":
-                    styles.Add(new Style(Configuration.Appartment.Styles.MODERN,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.kitchenStyleModern)));
-                    styles.Add(new Style(Configuration.Appartment.Styles.CLASSIC,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.kitchenStyleClassic)));
-                    styles.Add(new Style(Configuration.Appartment.Styles.OLD,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.kitchenStyleOld)));
-                    break;
-                case "Bathroom":
-                    styles.Add(new Style(Configuration.Appartment.Styles.MODERN,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.bathroomStyleModern)));
-                    styles.Add(new Style(Configuration.Appartment.Styles.CLASSIC,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.bathroomStyleClassic)));
-                    styles.Add(new Style(Configuration.Appartment.Styles.OLD,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.bathroomStyleOld)));
-                    break;
-                case "Bedroom":
-                    styles.Add(new Style(Configuration.Appartment.Styles.MODERN,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.bedroomStyleModern)));
-                    styles.Add(new Style(Configuration.Appartment.Styles.CLASSIC,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.bedroomStyleClassic)));
-                    styles.Add(new Style(Configuration.Appartment.Styles.OLD,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.bedroomStyleOld)));
-                    break;
-                case "Hall":
-                    styles.Add(new Style(Configuration.Appartment.Styles.MODERN,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.hallStyleModern)));
-                    styles.Add(new Style(Configuration.Appartment.Styles.CLASSIC,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.hallStyleClassic)));
-                    styles.Add(new Style(Configuration.Appartment.Styles.OLD,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.hallStyleOld)));
-                    break;
-                default:
-                    styles.Add(new Style(Configuration.Appartment.Styles.MODERN,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.styleModern)));
-                    styles.Add(new Style(Configuration.Appartment.Styles.CLASSIC,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.styleClassic)));
-                    styles.Add(new Style(Configuration.Appartment.Styles.OLD,
-                        Resources.Load<Sprite>(Assets.GetInstance().sprites.styleOld)));
-                    break;
+                stls = Master.GetInstance().House.module.styles.ToArray();
+            }
+            else
+            {
+                House.Module[] mdls = Master.GetInstance().House.modules.ToArray();
+                for (int i = 0; i < mdls.Length; i++)
+                {
+                    if (mdls[i].name == module)
+                    {
+                        stls = mdls[i].styles.ToArray();
+                        break;
+                    }
+                }
+            }
+            if (stls != null)
+            {
+                for (int i = 0; i < stls.Length; i++)
+                {
+                    styles.Add(new Style(stls[i].type, stls[i].image));
+                }
             }
         }
 
@@ -248,12 +229,12 @@ namespace HomeBuilder.Questioning
 
         public class Style
         {
-            readonly public Configuration.Appartment.Styles name;
+            readonly public string name;
             readonly public Sprite image;
 
-            public Style(Configuration.Appartment.Styles name, Sprite image)
+            public Style(string name, Sprite image)
             {
-                this.name = name;
+                this.name  = name;
                 this.image = image;
             }
         }

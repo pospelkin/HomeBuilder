@@ -42,19 +42,15 @@ namespace HomeBuilder.History
 
             SetSquare(app.GetSquare());
             Sprite sprite = null;
-            switch (app.GetStyle())
+            House.Style[] styles = Master.GetInstance().House.module.styles.ToArray();
+            for (int i = 0; i < styles.Length; i++)
             {
-                    case Configuration.Appartment.Styles.CLASSIC:
-                    sprite = Resources.Load<Sprite>(Assets.GetInstance().sprites.styleClassic);
+                if (styles[i].type == app.GetStyle())
+                {
+                    SetImage(styles[i].image);
                     break;
-                    case Configuration.Appartment.Styles.MODERN:
-                    sprite = Resources.Load<Sprite>(Assets.GetInstance().sprites.styleModern);
-                    break;
-                    case Configuration.Appartment.Styles.OLD:
-                    sprite = Resources.Load<Sprite>(Assets.GetInstance().sprites.styleOld);
-                    break;
+                }
             }
-            SetImage(sprite);
         } 
 
         public Appartment GetAppartment()

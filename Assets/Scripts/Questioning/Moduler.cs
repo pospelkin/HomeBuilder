@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using HomeBuilder.Core;
+using UnityEngine.UI;
 
 namespace HomeBuilder.Questioning
 {
@@ -7,7 +9,6 @@ namespace HomeBuilder.Questioning
     {
 
         public Transform content;
-        public Module[] modules;
 
         float _squareTotal  = 0;
         float _squareUsed {
@@ -26,14 +27,16 @@ namespace HomeBuilder.Questioning
         {
             List<ModuleInfo> infos = new List<ModuleInfo>();
 
-            for (int i = 0; i < modules.Length; i++)
+            int length = allModules.Count;
+            for (int i = 0; i < length; i++)
             {
-                if (modules[i].GetCount() > 0)
+                Module module = allModules[i].GetComponent<Module>();
+                if (module != null && module.GetCount() > 0)
                 {
                     ModuleInfo info = new ModuleInfo();
-                    info.name       = modules[i].GetName();
-                    info.count      = modules[i].GetCount();
-                    info.param      = modules[i].GetParams();
+                    info.name       = module.GetName();
+                    info.count      = module.GetCount();
+                    info.param      = module.GetParams();
 
                     infos.Add(info);
                 }
@@ -46,28 +49,38 @@ namespace HomeBuilder.Questioning
         {
             _squareTotal    = app.GetSquare();
 
-            for (int i = 0; i < modules.Length; i++)
+            int length = allModules.Count;
+            for (int i = 0; i < length; i++)
             {
-                modules[i].SetLimits();
+                Module module = allModules[i].GetComponent<Module>();
+                if (module != null)
+                {
+                    module.SetLimits();
+                }
             }
         }
 
         public void SetState(Core.ModuleInfo[] appModules, int floors)
         {
-            for (int i = 0; i < modules.Length; i++)
+            int length = allModules.Count;
+            for (int i = 0; i < length; i++)
             {
-                if (modules[i].main.GetName() == "Floors")
+                Module module = allModules[i].GetComponent<Module>();
+                if (module != null)
                 {
-                    modules[i].main.SetCount(floors);
-                }
-                else
-                {
-                    int count = 0;
-                    foreach (Core.ModuleInfo m in appModules)
+                    if (module.main.GetName() == "Floors")
                     {
-                        if (m.GetName().Equals(modules[i].main.GetName())) count++;
+                        module.main.SetCount(floors);
                     }
-                    modules[i].main.SetCount(count);
+                    else
+                    {
+                        int count = 0;
+                        foreach (Core.ModuleInfo m in appModules)
+                        {
+                            if (m.GetName().Equals(module.main.GetName())) count++;
+                        }
+                        module.main.SetCount(count);
+                    }
                 }
             }
         }
@@ -76,10 +89,15 @@ namespace HomeBuilder.Questioning
         {
             int count = 0;
 
-            for (int i = 0; i < modules.Length; i++)
+            int length = allModules.Count;
+            for (int i = 0; i < length; i++)
             {
-                if (modules[i].name.Contains("Floors")) continue;
-                count += modules[i].main.count;
+                Module module = allModules[i].GetComponent<Module>();
+                if (module != null)
+                {
+                    if (module.main.GetName().Contains("Floors")) continue;
+                    count += module.main.count;
+                }
             }
 
             return count;
@@ -89,39 +107,94 @@ namespace HomeBuilder.Questioning
         {
             int sqaure = 0;
 
-            for (int i = 0; i < modules.Length; i++)
+            int length = allModules.Count;
+            for (int i = 0; i < length; i++)
             {
-                if (modules[i].IsExtended())
+                Module module = allModules[i].GetComponent<Module>();
+                if (module != null)
                 {
-                    sqaure += modules[i].main.count * modules[i].square.count;
-                } else
-                {
-                    sqaure += (int)(modules[i].main.count * modules[i].GetParams().minSquare);
+                    if (module.IsExtended())
+                    {
+                        sqaure += module.main.count * module.square.count;
+                    }
+                    else
+                    {
+                        if (module.GetParams() != null) sqaure += (int)(module.main.count * module.GetParams().minSquare);
+                    }
                 }
             }
 
             return sqaure;
         }
 
+        private List<GameObject> allModules;
+
         void Start()
         {
-            for (int i = 0; i < modules.Length; i++)
+            allModules = new List<GameObject>();
+
+            Reset();
+        }
+
+        public void Reset()
+        {
+            if (allModules.Count > 0)
             {
-                Configuration.Appartment.ModuleParams p = Configuration.Appartment.GetModuleFor(modules[i].GetName());
-                modules[i].SetModulerAndParams(this, p);
+                foreach (GameObject obj in allModules)
+                {
+                    Destroy(obj);
+                }
+            }
+            allModules.Clear();
+
+            AddSeparator("Modules");
+
+            House.Module[] mdls = Master.GetInstance().House.modules.ToArray();
+            for (int i = 0; i < mdls.Length; i++)
+            {
+                AddModule(mdls[i]);
             }
 
-            //modules = new Module[Configuration.Appartment.approvedModules.Length];
-            //for (int i = 0; i < modules.Length; i++)
-            //{
-            //    Configuration.Appartment.ModuleParams p = Configuration.Appartment.approvedModules[i];
-            //    GameObject obj = Instantiate(Resources.Load(Assets.GetInstance().prefabs.moduleS), content) as GameObject;
-            //    obj.transform.localScale = new Vector3(1, 1, 1);
-            //    obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, 0);
+            AddSeparator("Floors");
 
-            //    modules[i] = obj.GetComponent<Module>();
-            //    modules[i].SetModulerAndParams(this, p);
-            //}
+            AddFloorModule();
+        }
+
+        void AddSeparator(string caption)
+        {
+            GameObject obj = Instantiate(Resources.Load(Assets.GetInstance().prefabs.separator), content) as GameObject;
+            obj.transform.localScale = new Vector3(1, 1, 1);
+            obj.GetComponentInChildren<Text>().text = caption;
+            allModules.Add(obj);
+        }
+
+        void AddModule(House.Module module)
+        {
+            GameObject obj = Instantiate(Resources.Load(Assets.GetInstance().prefabs.moduleS), content) as GameObject;
+            obj.transform.localScale = new Vector3(1, 1, 1);
+            //obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, 0);
+            Module m = obj.GetComponent<Module>();
+            m.SetModuler(this);
+            m.SetParams(
+                new Configuration.Appartment.ModuleParams(module.name, module.minSquare, module.minHeight, module.minHeight)
+                );
+            m.SetCaption(module.name);
+            allModules.Add(obj);
+        }
+
+        void AddFloorModule()
+        {
+            GameObject obj = Instantiate(Resources.Load(Assets.GetInstance().prefabs.moduleS), content) as GameObject;
+            obj.transform.localScale = new Vector3(1, 1, 1);
+            //obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, 0);
+            Module m = obj.GetComponent<Module>();
+            m.SetModuler(this);
+            m.SetCaption("Floors");
+            m.minCount = 1;
+            m.maxCount = 2;
+            m.fixesCount = true;
+
+            allModules.Add(obj);
         }
 
         public class ModuleInfo

@@ -12,16 +12,35 @@ namespace HomeBuilder.History
         public ScreenController screen;
 
         List<Note> notes;
+        private static int currentName = 0;
+        private static int count       = 0;
+        private static string[] names = new string[] { "Appartment", "Dream House", "The Vault", "Villa", "Castle" };
 
         public void CreateNewProject()
         {
             Master.FLOW  = true;
             Master.SLIDE = true;
 
-            Appartment appartment = new Appartment("New project", Designer.GetId());
+            Appartment appartment = new Appartment(GetName(), Designer.GetId());
             Master.GetInstance().SetCurrent(appartment);
 
             screen.OpenStyle();
+        }
+
+        string GetName()
+        {
+            string name = names[currentName];
+            if (count > 0)
+            {
+                name += " " + (count + 1);
+            }
+            currentName++;
+            if (currentName >= names.Length)
+            {
+                currentName = 0;
+                count++;
+            }
+            return name;
         }
 
         void Start()

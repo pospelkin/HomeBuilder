@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.SceneManagement;
@@ -18,6 +19,10 @@ namespace HomeBuilder.Questioning
         public Moduler moduler;
 
         private Appartment       _app;
+
+        public string BundleURL = "file://D:/Users/Glukozavr/Workspace/HomeBuilder/Assets/AssetBundles/house";
+        public string AssetName = "Bundle";
+        public int version = 1;
 
         public void Next()
         {
@@ -78,13 +83,64 @@ namespace HomeBuilder.Questioning
         {
             ModuleInfo[] modules = _app.GetModules();
             _app.ResetModules();
+
             moduler.SetLimits(_app);
             moduler.SetState(modules, _app.GetFloors());
         }
 
         bool IsReadyToProceed()
         {
-            return moduler.GetTotalCount() > 0;
+            return moduler.GetTotalCount() >= _app.GetFloors();
+        }
+
+        public void UpdateBundle()
+        {
+            DownloadBundle();
+        }
+
+        void DownloadBundle()
+        {
+            StartCoroutine(Downloading());
+        }
+
+        IEnumerator Downloading()
+        {
+            moduler.GetComponent<Animator>().SetBool("Sync", true);
+            // Wait for the Caching system to be ready
+            while (!Caching.ready)
+                yield return null;
+
+            // Load the AssetBundle file from Cache if it exists with the same version or download and store it in the cache
+            using (WWW www = WWW.LoadFromCacheOrDownload(BundleURL, version))
+            {
+                yield return www;
+                if (www.error != null)
+                {
+                    moduler.GetComponent<Animator>().SetBool("Sync", false);
+                    throw new Exception("WWW download had an error:" + www.error);
+                }
+                AssetBundle bundle = www.assetBundle;
+                GameObject obj = null;
+                if (AssetName == "")
+                    obj = Instantiate(bundle.mainAsset) as GameObject;
+                else
+                    obj = Instantiate(bundle.LoadAsset(AssetName)) as GameObject;
+            
+                if (obj != null) ProcessBundle(obj.GetComponent<BundleAsset>());
+                // Unload the AssetBundles compressed contents to conserve memory
+                bundle.Unload(false);
+
+                moduler.GetComponent<Animator>().SetBool("Sync", false);
+            } // memory is freed from the web stream (www.Dispose() gets called implicitly)
+            moduler.GetComponent<Animator>().SetBool("Sync", false);
+        }
+
+        void ProcessBundle(BundleAsset bundle)
+        {
+            if (bundle == null) return;
+
+            Master.GetInstance().SetHouse(bundle.house.Export());
+            moduler.Reset();
         }
 
     }

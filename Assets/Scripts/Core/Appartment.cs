@@ -10,7 +10,7 @@ namespace HomeBuilder.Core
 
         public readonly int    id;
         string          name;
-        Configuration.Appartment.Styles style;
+        string style;
         private Layout[] floorPlans = null;
         private bool _styleSet = false;
         float           square;
@@ -156,13 +156,13 @@ namespace HomeBuilder.Core
             _styleSet = false;
         }
 
-        public void SetStyle(Configuration.Appartment.Styles style)
+        public void SetStyle(string style)
         {
             _styleSet = true;
             this.style = style;
         }
 
-        public Configuration.Appartment.Styles GetStyle()
+        public string GetStyle()
         {
             return style;
         }

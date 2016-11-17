@@ -15,6 +15,8 @@ public class Loginner : MonoBehaviour
     public InputField login;
     public InputField password;
 
+    public BundleAsset bundle;
+
     private List<User> users;
 
     public class User
@@ -93,6 +95,10 @@ public class Loginner : MonoBehaviour
         users = new List<User>();
         users.Add(new User("user", "user"));
 
+        if (bundle != null)
+        {
+            Master.GetInstance().SetHouse(bundle.house.Export());
+        }
         if (!FB.IsInitialized)
         {
             FB.Init(InitCallback);

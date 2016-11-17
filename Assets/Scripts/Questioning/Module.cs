@@ -17,12 +17,19 @@ namespace HomeBuilder.Questioning
         Configuration.Appartment.ModuleParams parameters;
         Moduler moduler;
 
-        public void SetModulerAndParams(Moduler m, Configuration.Appartment.ModuleParams p)
+        public void SetModuler(Moduler m)
         {
             moduler     = m;
-            parameters  = p;
+        }
 
-            main.SetName(parameters.name);
+        public void SetParams(Configuration.Appartment.ModuleParams p)
+        {
+            parameters = p;
+        }
+
+        public void SetCaption(string name)
+        {
+            main.SetName(name);
         }
 
         public bool IsExtended()

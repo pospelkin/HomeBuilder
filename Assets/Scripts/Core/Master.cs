@@ -6,8 +6,8 @@ namespace HomeBuilder.Core
     public class Master
     {
 
-        static private Master instance = null;
-        static public Master GetInstance()
+        private static Master instance = null;
+        public  static Master GetInstance()
         {
             if (instance == null)
             {
@@ -20,6 +20,8 @@ namespace HomeBuilder.Core
         public History  history;
         public Designer designer;
 
+        public House House { private set; get; }
+
         Appartment current       = null;
         ModuleInfo currentModule = null;
 
@@ -27,9 +29,8 @@ namespace HomeBuilder.Core
         {
             history     = new History();
             designer    = new Designer();
-            history.SimulateHistory();
-
-            SetCurrent(Designer.GetRandomAppartment());
+            //history.SimulateHistory();
+            //SetCurrent(Designer.GetRandomAppartment());
         }
 
         public void SetCurrent(Appartment app)
@@ -50,6 +51,11 @@ namespace HomeBuilder.Core
         public ModuleInfo GetCurrentModule()
         {
             return currentModule;
+        }
+
+        public void SetHouse(House h)
+        {
+            House = h;
         }
 
         public static bool FLOW  = true;

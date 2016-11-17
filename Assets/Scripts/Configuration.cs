@@ -40,48 +40,19 @@ namespace HomeBuilder
                 }
             }
 
-            readonly static public ModuleParams[] approvedModules = new ModuleParams[] {
-                new ModuleParams("Kitchen"   , 8,    2, 4, Color.red, Assets.GetInstance().prefabs.redCube),
-                new ModuleParams("Bathroom" , 6,    2, 3, Color.green, Assets.GetInstance().prefabs.greenCube),
-                new ModuleParams("Hall", 12,   3, 4, Color.blue, Assets.GetInstance().prefabs.blueCube),
-                new ModuleParams("Bedroom"  , 16,   4, 4, Color.gray, Assets.GetInstance().prefabs.greyCube)
-            };
-
-            public static ModuleParams GetModuleFor(string module)
-            {
-                switch (module)
-                {
-                    case "Kitchen":
-                        return new ModuleParams("Kitchen", 8, 2, 4, Color.red, Assets.GetInstance().prefabs.redCube);
-                    case "Bathroom":
-                        return new ModuleParams("Bathroom", 6, 2, 3, Color.green, Assets.GetInstance().prefabs.greenCube);
-                    case "Hall":
-                        return new ModuleParams("Hall", 12, 3, 4, Color.blue, Assets.GetInstance().prefabs.blueCube);
-                    case "Bedroom":
-                        return new ModuleParams("Bedroom", 16, 4, 4, Color.gray, Assets.GetInstance().prefabs.greyCube);
-                    case "Floors":
-                        return new ModuleParams("Floors", 0, 0, 0, Color.gray, Assets.GetInstance().prefabs.greyCube);
-                }
-                return null;
-            }
-
             public class ModuleParams
             {
-                readonly public string name;
-                readonly public float minSquare;
-                readonly public float minWidth;
-                readonly public float minHeight;
-                readonly public Color color;
-                readonly public string asset;
+                public readonly string name;
+                public readonly float minSquare;
+                public readonly float minWidth;
+                public readonly float minHeight;
 
-                public ModuleParams(string name, float sq, float w, float h, Color color, string asset)
+                public ModuleParams(string name, float sq, float w, float h)
                 {
                     this.name   = name;
                     minSquare   = sq;
                     minWidth    = w;
                     minHeight   = h;
-                    this.color  = color;
-                    this.asset = asset;
                 }
             }
             

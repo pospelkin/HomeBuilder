@@ -37,6 +37,7 @@ namespace HomeBuilder
             readonly public string note      = "Prefabs/note_prefab";
             readonly public string module    = "Prefabs/module_prefab";
             readonly public string moduleS   = "Prefabs/module_small_prefab";
+            readonly public string separator   = "Prefabs/module_separator_prefab";
             readonly public string planRoom  = "Prefabs/plan_room_prefab";
 
             readonly public string editor    = "Prefabs/Editor";

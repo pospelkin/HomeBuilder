@@ -8,7 +8,7 @@ namespace HomeBuilder.Core
 
         string  name;
         private bool _styleSet = false;
-        Configuration.Appartment.Styles         style;
+        string         style;
         Configuration.Appartment.ModuleParams   param;
 
         float width     = -1;
@@ -60,13 +60,13 @@ namespace HomeBuilder.Core
             return _styleSet;
         }
 
-        public void SetStyle(Configuration.Appartment.Styles style)
+        public void SetStyle(string style)
         {
             _styleSet  = true;
             this.style = style;
         }
 
-        public Configuration.Appartment.Styles GetStyle()
+        public string GetStyle()
         {
             return style;
         }
