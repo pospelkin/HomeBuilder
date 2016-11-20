@@ -29,10 +29,7 @@ namespace HomeBuilder
         public class PrefabAssets
         {
 
-            readonly public string redCube      = "Prefabs/red_cube_prefab";
-            readonly public string greenCube    = "Prefabs/green_cube_prefab";
-            readonly public string blueCube     = "Prefabs/blue_cube_prefab";
-            readonly public string greyCube     = "Prefabs/grey_cube_prefab";
+            readonly public string moduleBtn      = "Prefabs/Module_btn_prefab";
 
             readonly public string note      = "Prefabs/note_prefab";
             readonly public string module    = "Prefabs/module_prefab";

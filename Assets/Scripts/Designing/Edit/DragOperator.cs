@@ -37,6 +37,7 @@ namespace HomeBuilder.Designing
             {
                 if (onClickHandler != null) onClickHandler(this);
             }
+            drag = false;
             time    = -1;
         }
 
@@ -58,7 +59,15 @@ namespace HomeBuilder.Designing
             RectTransform rect  = (RectTransform) transform;
             if (box != null)
             {
-                Vector2 size = new Vector2(reference.sizeDelta.x - 50, reference.sizeDelta.y - 50);
+                Vector2 size = Vector2.zero;
+                if (rect.rect.width < rect.rect.height)
+                {
+                    size = new Vector2(rect.rect.width + 50, rect.rect.height);
+                }
+                else
+                {
+                    size = new Vector2(rect.rect.width, rect.rect.height + 50);
+                }
                 box.size    = size;
                 box.offset  = new Vector2(0, 0);
             }

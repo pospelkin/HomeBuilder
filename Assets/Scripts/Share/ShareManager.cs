@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Facebook.Unity;
 using HomeBuilder.Core;
+using HomeBuilder.Designing;
 using UnityEngine.UI;
 using VoxelBusters.NativePlugins;
 
@@ -13,6 +14,7 @@ namespace HomeBuilder.Share
     public class ShareManager : MonoBehaviour
     {
 
+        public Constructor constructor;
         public InputField email;
         public PDFComposer pdf;
 
@@ -45,6 +47,11 @@ namespace HomeBuilder.Share
 
         public void SendPDFViaEmail()
         {
+            StartCoroutine(SendEmail());
+        }
+
+        IEnumerator SendEmail()
+        {
             Appartment app = Master.GetInstance().GetCurrent();
 
             MailShareComposer _composer = new MailShareComposer();
@@ -55,15 +62,17 @@ namespace HomeBuilder.Share
             _composer.IsHTMLBody = false;
 
             // Send array of receivers if required
-            _composer.ToRecipients = new string[] { email.text } ;
+            _composer.ToRecipients = new string[] { email.text };
             //_composer.CCRecipients = m_mailCCRecipients;
             //_composer.BCCRecipients = m_mailBCCRecipients;
 
             // Add below line if you want to attach screenshot. Else, ignore.
             // _composer.AttachScreenShot();
 
+            yield return StartCoroutine(pdf.CreatePDF(app));
+
             // Add below line if you want to attach a file, for ex : image. Else, ignore.
-            _composer.AddAttachmentAtPath(pdf.DownloadPDF(app), MIMEType.kPDF);
+            _composer.AddAttachmentAtPath(pdf.filepath, MIMEType.kPDF);
 
             // Use below line if you want to add any other attachment format. Else, ignore.
             // _composer.AddAttachment(ATTACHMENT_DATA_IN_BYTE_ARRAY, ATTACHMENT_FILE_NAME, MIME_TYPE);
@@ -86,6 +95,8 @@ namespace HomeBuilder.Share
 
         public void Open()
         {
+            constructor.SaveAppartment();
+
             GetComponent<Animator>().SetBool("Open", true);
         }
         

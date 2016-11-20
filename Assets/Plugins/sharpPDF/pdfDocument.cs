@@ -198,12 +198,12 @@ namespace sharpPDF
 
             FileStream _myFileOut = null;;
 			try {
-//#if (UNITY_EDITOR)
-//                fileName = outputFile;
+#if (UNITY_EDITOR)
+                fileName = outputFile;
 
-//#else
+#else
                 fileName = "/sdcard/" + outputFile;
-//#endif
+#endif
                 _myFileOut = new FileStream(fileName, FileMode.Create);
 				createPDF(_myFileOut);
             } catch (IOException exIO) {

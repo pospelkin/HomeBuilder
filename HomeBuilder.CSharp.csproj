@@ -129,6 +129,7 @@
     <Compile Include="Assets\Scripts\Core\ModuleInfo.cs" />
     <Compile Include="Assets\Scripts\Core\StyleAsset.cs" />
     <Compile Include="Assets\Scripts\Designing\Constructor.cs" />
+    <Compile Include="Assets\Scripts\Designing\ContextModules.cs" />
     <Compile Include="Assets\Scripts\Designing\Cube.cs" />
     <Compile Include="Assets\Scripts\Designing\Edit\DragOperator.cs" />
     <Compile Include="Assets\Scripts\Designing\Edit\Editor.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Assets\Scripts\GlobalScreenManager.cs" />
     <Compile Include="Assets\Scripts\History\Historian.cs" />
     <Compile Include="Assets\Scripts\History\Note.cs" />
+    <Compile Include="Assets\Scripts\History\UpdateContent.cs" />
     <Compile Include="Assets\Scripts\InputHandler.cs" />
     <Compile Include="Assets\Scripts\Interfaces\GCamera.cs" />
     <Compile Include="Assets\Scripts\Loginner.cs" />

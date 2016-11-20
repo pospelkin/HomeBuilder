@@ -44,6 +44,19 @@ namespace HomeBuilder.Designing
             }
         }
 
+        public void RecreatePlans()
+        {
+            foreach (PlanRoom p in plans)
+            {
+                Destroy(p.gameObject);
+            }
+
+            plans = null;
+            CreatePlans();
+
+            UpdateAll();
+        }
+
         public void TurnOff()
         {
             container.parent.gameObject.GetComponent<CanvasGroup>().alpha = 0;

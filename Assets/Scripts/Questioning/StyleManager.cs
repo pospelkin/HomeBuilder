@@ -93,7 +93,7 @@ namespace HomeBuilder.Questioning
 
         public void SliderChange()
         {
-            sizeTxt.text = "Size: " + GetSize() + "m3";
+            sizeTxt.text = "Size: " + GetSize() + " m2";
         }
 
         public int GetSize()

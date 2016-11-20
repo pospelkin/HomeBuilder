@@ -62,6 +62,16 @@ namespace HomeBuilder.Designing
             UpdatePositions();
         }
 
+        public void AddModule(ModuleInfo m)
+        {
+            fixer = new Fixer();
+            appartment.AddModule(m);
+            elements = new List<LayoutElement>();
+
+            fixer.Fix(appartment);
+            Restart(appartment, /*cubes, */appartment.GetModules());
+        }
+
         public void Interchange(LayoutElement l1, LayoutElement l2)
         {
             appartment.Interchange(l1.info, l2.info);

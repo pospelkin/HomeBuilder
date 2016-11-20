@@ -55,6 +55,19 @@ namespace HomeBuilder.Questioning
                 Module module = allModules[i].GetComponent<Module>();
                 if (module != null)
                 {
+                    if (module.main.GetName() == "Floors")
+                    {
+                        module.main.SetMin(app.GetFloors());
+                    }
+                    else
+                    {
+                        int count = 0;
+                        foreach (Core.ModuleInfo m in app.GetModules())
+                        {
+                            if (m.GetName() == module.main.GetName()) count++;
+                        }
+                        module.main.SetMin(count);
+                    }
                     module.SetLimits();
                 }
             }
@@ -147,6 +160,11 @@ namespace HomeBuilder.Questioning
             }
             allModules.Clear();
 
+
+            AddSeparator("Floors");
+
+            AddFloorModule();
+
             AddSeparator("Modules");
 
             House.Module[] mdls = Master.GetInstance().House.modules.ToArray();
@@ -154,16 +172,13 @@ namespace HomeBuilder.Questioning
             {
                 AddModule(mdls[i]);
             }
-
-            AddSeparator("Floors");
-
-            AddFloorModule();
         }
 
         void AddSeparator(string caption)
         {
             GameObject obj = Instantiate(Resources.Load(Assets.GetInstance().prefabs.separator), content) as GameObject;
             obj.transform.localScale = new Vector3(1, 1, 1);
+            obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, 0);
             obj.GetComponentInChildren<Text>().text = caption;
             allModules.Add(obj);
         }
@@ -172,7 +187,7 @@ namespace HomeBuilder.Questioning
         {
             GameObject obj = Instantiate(Resources.Load(Assets.GetInstance().prefabs.moduleS), content) as GameObject;
             obj.transform.localScale = new Vector3(1, 1, 1);
-            //obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, 0);
+            obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, 0);
             Module m = obj.GetComponent<Module>();
             m.SetModuler(this);
             m.SetParams(
@@ -186,7 +201,7 @@ namespace HomeBuilder.Questioning
         {
             GameObject obj = Instantiate(Resources.Load(Assets.GetInstance().prefabs.moduleS), content) as GameObject;
             obj.transform.localScale = new Vector3(1, 1, 1);
-            //obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, 0);
+            obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, 0);
             Module m = obj.GetComponent<Module>();
             m.SetModuler(this);
             m.SetCaption("Floors");
@@ -202,6 +217,17 @@ namespace HomeBuilder.Questioning
             public string name;
             public int count;
             public Configuration.Appartment.ModuleParams param;
+
+            public ModuleInfo()
+            {
+            }
+
+            public ModuleInfo(House.Module m)
+            {
+                name = m.name;
+                count = 1;
+                param = new Configuration.Appartment.ModuleParams(m.name, m.minSquare, m.minWidth, m.minHeight);
+            }
         }
 
     }

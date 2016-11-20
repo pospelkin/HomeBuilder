@@ -128,7 +128,7 @@ namespace sharpPDF
 		public void addImage(Byte[] myImage, int X, int Y, int imageHeight, int imageWidth)
 		{
 			try {
-				imageElement objImage = new imageElement(myImage, X, Y, imageHeight, imageWidth );
+				imageElement objImage = new imageElement(myImage, X, Y, imageWidth, imageHeight);
 				_elements.Add(objImage);
 				objImage = null;
 			} catch (pdfImageNotFoundException ex) {

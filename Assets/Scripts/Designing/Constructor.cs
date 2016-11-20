@@ -1,11 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 using HomeBuilder.Core;
-using UnityEngine.SceneManagement;
-using System.Collections.Generic;
-using System.Linq;
 using DG.Tweening;
+using HomeBuilder.Questioning;
 
 namespace HomeBuilder.Designing
 {
@@ -18,6 +15,9 @@ namespace HomeBuilder.Designing
         public Text floorText;
         public Canvas canvas;
         public Button toggler;
+        public ContextModules contextModules;
+        public Animator saveAnimator;
+        public Text caption;
         public GameObject modules;
         public GameObject shareBtn;
         public InputHandler input;
@@ -43,18 +43,26 @@ namespace HomeBuilder.Designing
             screen.OpenHistory();
         }
 
-
         public void EditModules()
         {
-            appartment.SetEditing(true);
-
-            Master.FLOW = false;
-            Master.SLIDE = false;
-
-            screen.OpenModules();
+            if (!contextModules.IsOpen)
+            {
+                contextModules.Open();
+            }
+            else
+            {
+                contextModules.Close();
+            }
         }
 
         public void Save()
+        {
+            SaveAppartment();
+
+            saveAnimator.SetTrigger("Accept");
+        }
+
+        public void SaveAppartment()
         {
             for (int i = 0; i < layouts.Length; i++)
             {
@@ -66,50 +74,81 @@ namespace HomeBuilder.Designing
             Master.GetInstance().history.Save(appartment.GetName(), appartment);
         }
 
+        public void AddModule(House.Module module)
+        {
+
+            Debug.Log("Adding module: " + module.name);
+
+            contextModules.Close();
+
+            ModuleInfo moduleInfo = new ModuleInfo(module.name);
+            moduleInfo.SetParams(new Moduler.ModuleInfo(module).param);
+
+            moduleInfo.SetFloor(current);
+            Layout layout = layouts[current];
+            layout.AddModule(moduleInfo);
+
+            editors[current].RecreatePlans();
+        }
+
         public void Toggle2D()
         {
             cameraController.enabled = !cameraController.enabled;
 
             if (!cameraController.enabled)
             {
-                SphereCamera cam = (SphereCamera)cameraController.gCamera;
-
-                oldValues[0] = cam.GetTita();
-                oldValues[1] = cam.GetPhi();
-                oldValues[2] = cam.GetRadius();
-
-                cam.SetTita(0);
-                cam.SetPhi(0);
-                cam.SetRadius(14);
-
-                cameraController.gCamera.UpdatePosition();
-
-                foreach (Editor editor in editors)
-                {
-                    editor.TurnOn();
-                }
-                toggler.GetComponentInChildren<Text>().text = "View";
-                SetFloor();
-                modules.SetActive(true);
-                shareBtn.SetActive(true);
+                OpenPlan();
             } else
             {
-                SphereCamera cam = (SphereCamera)cameraController.gCamera;
-
-                cam.SetTita(oldValues[0]);
-                cam.SetPhi(oldValues[1]);
-                cam.SetRadius(oldValues[2]);
-
-                cameraController.gCamera.UpdatePosition();
-
-                foreach (Editor editor in editors)
-                {
-                    editor.TurnOff();
-                }
-                toggler.GetComponentInChildren<Text>().text = "Modify";
-                modules.SetActive(false);
-                shareBtn.SetActive(false);
+                OpenModel();
             }
+        }
+
+        public void OpenPlan()
+        {
+            caption.text = "Edit Mode";
+
+            SphereCamera cam = (SphereCamera)cameraController.gCamera;
+
+            oldValues[0] = cam.GetTita();
+            oldValues[1] = cam.GetPhi();
+            oldValues[2] = cam.GetRadius();
+
+            cam.SetTita(0);
+            cam.SetPhi(0);
+
+            cameraController.gCamera.UpdatePosition();
+
+            foreach (Editor editor in editors)
+            {
+                editor.TurnOn();
+            }
+            toggler.GetComponentInChildren<Text>().text = "View";
+            SetFloor();
+            modules.SetActive(true);
+            //shareBtn.SetActive(true);
+        }
+
+        public void OpenModel()
+        {
+            caption.text = "View Mode";
+
+            SphereCamera cam = (SphereCamera)cameraController.gCamera;
+
+            cam.SetTita(oldValues[0]);
+            cam.SetPhi(oldValues[1]);
+            cam.SetRadius(oldValues[2]);
+
+            cameraController.gCamera.UpdatePosition();
+
+            foreach (Editor editor in editors)
+            {
+                editor.TurnOff();
+            }
+            toggler.GetComponentInChildren<Text>().text = "Modify";
+            modules.SetActive(false);
+            //shareBtn.SetActive(false);
+
         }
 
         void Start()
@@ -190,6 +229,21 @@ namespace HomeBuilder.Designing
             {
                 AnimateChange(prev, next, flow);    
             }
+        }
+
+        public void OpenFloor(int i)
+        {
+            if (i >= editors.Length || i < 0) return;
+
+            Editor prev = editors[current];
+            current = i;
+            Editor next = editors[current];
+
+            RectTransform t1 = (RectTransform)prev.container;
+            RectTransform t2 = (RectTransform)next.container;
+
+            t1.anchoredPosition = new Vector2(-2730, 0);
+            t2.anchoredPosition = new Vector2(0, 0);
         }
 
         void AnimateChange(Editor prev, Editor next, bool flow = true)

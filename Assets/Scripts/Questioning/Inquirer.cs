@@ -1,10 +1,6 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using UnityEngine.SceneManagement;
 using HomeBuilder.Core;
-using System.Collections.Generic;
 
 namespace HomeBuilder.Questioning
 {
@@ -20,10 +16,6 @@ namespace HomeBuilder.Questioning
 
         private Appartment       _app;
 
-        public string BundleURL = "file://D:/Users/Glukozavr/Workspace/HomeBuilder/Assets/AssetBundles/house";
-        public string AssetName = "Bundle";
-        public int version = 1;
-
         public void Next()
         {
             if (!IsReadyToProceed()) return;
@@ -38,6 +30,13 @@ namespace HomeBuilder.Questioning
                 }
                 else
                 {
+                    int count = 0;
+                    ModuleInfo[] apMs = _app.GetModules();
+                    foreach (ModuleInfo m in apMs)
+                    {
+                        if (modules[i].name == m.GetName()) count++;
+                    }
+                    length -= count;
                     for (int j = 0; j < length; j++)
                     {
                         ModuleInfo module = new ModuleInfo(modules[i].name);
@@ -50,8 +49,18 @@ namespace HomeBuilder.Questioning
             Master.FLOW  = true;
             Master.SLIDE = true;
 
-            Master.GetInstance().SetCurrentModule(_app.GetModules()[0]);
-            screen.OpenStyle();
+            ModuleInfo[] ms = _app.GetModules();
+            foreach (ModuleInfo m in ms)
+            {
+                if (!m.IsStyleSet())
+                {
+                    Master.GetInstance().SetCurrentModule(m);
+                    screen.OpenStyle();
+                    return;
+                }
+            }
+
+            screen.OpenDesigning();
         }
 
         public void Prev()
@@ -76,13 +85,18 @@ namespace HomeBuilder.Questioning
         {
             _app     = Master.GetInstance().GetCurrent();
 
+            if (_app.IsEditing())
+            {
+                prevButton.gameObject.SetActive(false);
+            }
+
             StartModuler();
         }
 
         void StartModuler()
         {
             ModuleInfo[] modules = _app.GetModules();
-            _app.ResetModules();
+            if (!_app.IsEditing()) _app.ResetModules();
 
             moduler.SetLimits(_app);
             moduler.SetState(modules, _app.GetFloors());
@@ -91,56 +105,6 @@ namespace HomeBuilder.Questioning
         bool IsReadyToProceed()
         {
             return moduler.GetTotalCount() >= _app.GetFloors();
-        }
-
-        public void UpdateBundle()
-        {
-            DownloadBundle();
-        }
-
-        void DownloadBundle()
-        {
-            StartCoroutine(Downloading());
-        }
-
-        IEnumerator Downloading()
-        {
-            moduler.GetComponent<Animator>().SetBool("Sync", true);
-            // Wait for the Caching system to be ready
-            while (!Caching.ready)
-                yield return null;
-
-            // Load the AssetBundle file from Cache if it exists with the same version or download and store it in the cache
-            using (WWW www = WWW.LoadFromCacheOrDownload(BundleURL, version))
-            {
-                yield return www;
-                if (www.error != null)
-                {
-                    moduler.GetComponent<Animator>().SetBool("Sync", false);
-                    throw new Exception("WWW download had an error:" + www.error);
-                }
-                AssetBundle bundle = www.assetBundle;
-                GameObject obj = null;
-                if (AssetName == "")
-                    obj = Instantiate(bundle.mainAsset) as GameObject;
-                else
-                    obj = Instantiate(bundle.LoadAsset(AssetName)) as GameObject;
-            
-                if (obj != null) ProcessBundle(obj.GetComponent<BundleAsset>());
-                // Unload the AssetBundles compressed contents to conserve memory
-                bundle.Unload(false);
-
-                moduler.GetComponent<Animator>().SetBool("Sync", false);
-            } // memory is freed from the web stream (www.Dispose() gets called implicitly)
-            moduler.GetComponent<Animator>().SetBool("Sync", false);
-        }
-
-        void ProcessBundle(BundleAsset bundle)
-        {
-            if (bundle == null) return;
-
-            Master.GetInstance().SetHouse(bundle.house.Export());
-            moduler.Reset();
         }
 
     }
