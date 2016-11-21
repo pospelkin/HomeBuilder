@@ -24,10 +24,10 @@ namespace HomeBuilder.Designing
         public DragOperator right;
 
         public GameObject seleted;
+        public GameObject drawn;
 
         public void SetActive(bool active)
         {
-            seleted.SetActive(active);
             leftUp.gameObject.SetActive(active);
             leftBottom.gameObject.SetActive(active);
             rightUp.gameObject.SetActive(active);
@@ -37,6 +37,16 @@ namespace HomeBuilder.Designing
             bottom.gameObject.SetActive(active);
             left.gameObject.SetActive(active);
             right.gameObject.SetActive(active);
+        }
+
+        public void SetDragged(bool active)
+        {
+            drawn.SetActive(active);
+        }
+
+        public void SetDragging(bool active)
+        {
+            seleted.SetActive(active);
         }
 
         void Start()

@@ -34,9 +34,11 @@ namespace HomeBuilder.Share
             cameraController.enabled = false;
             eventSystem.enabled      = false;
 
+            constructor.GetCurrentEditor().ClearAllSigns();
+
             GetComponent<CanvasGroup>().alpha = 0;
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(1f);
 
             pdfDocument myDoc = new pdfDocument(app.GetName(), "HomeBuilder", false);
             pdfPage page = myDoc.addPage();
@@ -50,7 +52,7 @@ namespace HomeBuilder.Share
                 "An appartment " + Format(app.GetSquare()) + "m2" + (app.GetFloors() == 2 ? " with 2 floors." : "."),
                 5, 700, predefinedFont.csTimes, 12, new pdfColor(predefinedColor.csBlack));
 
-            int yPos = 660;
+            int yPos = 630;
             /*Add Columns to a grid*/
             for (int i = 0; i < app.GetFloors(); i++)
             {
@@ -140,6 +142,7 @@ namespace HomeBuilder.Share
         {
             ((SphereCamera)cameraController.gCamera).SetPhi(-35);
             ((SphereCamera)cameraController.gCamera).SetTita(65);
+            ((SphereCamera)cameraController.gCamera).SetRadius(30);
             ((SphereCamera)cameraController.gCamera).UpdatePosition();
 
             yield return new WaitForEndOfFrame();

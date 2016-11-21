@@ -161,11 +161,11 @@ namespace HomeBuilder.Questioning
             allModules.Clear();
 
 
-            AddSeparator("Floors");
+            AddSeparator("FLOORS");
 
             AddFloorModule();
 
-            AddSeparator("Modules");
+            AddSeparator("MODULES");
 
             House.Module[] mdls = Master.GetInstance().House.modules.ToArray();
             for (int i = 0; i < mdls.Length; i++)

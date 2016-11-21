@@ -55,6 +55,16 @@ namespace HomeBuilder.Designing
             }
         }
 
+        public Layout GetCurrentLayout()
+        {
+            return layouts[current];
+        }
+
+        public Editor GetCurrentEditor()
+        {
+            return editors[current];
+        }
+
         public void Save()
         {
             SaveAppartment();

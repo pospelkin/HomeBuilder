@@ -15,12 +15,9 @@ namespace HomeBuilder.History
         public UpdateContent    update;
         public ScreenController screen;
 
-        [HideInInspector]
-        public string BundleURL = "file://D:/Users/Glukozavr/Workspace/HomeBuilder/Assets/AssetBundles/house";
-        [HideInInspector]
-        public string AssetName = "Bundle";
-        [HideInInspector]
-        public int version = 1;
+        private string BundleURL = "house1";
+        private string AssetName = "Bundle";
+        private int version = 1;
 
         List<Note> notes;
         private static int currentName = 0;
@@ -38,9 +35,14 @@ namespace HomeBuilder.History
             // Wait for the Caching system to be ready
             while (!Caching.ready)
                 yield return null;
-
+#if (UNITY_EDITOR)
+            string filepath = "file:///" + Application.streamingAssetsPath + "/" + BundleURL;
+#else
+                        string filepath = Application.streamingAssetsPath + "/" + BundleURL;
+#endif
             // Load the AssetBundle file from Cache if it exists with the same version or download and store it in the cache
-            using (WWW www = WWW.LoadFromCacheOrDownload(BundleURL, version))
+            Debug.Log("Trying to download.." + filepath);
+            using (WWW www = WWW.LoadFromCacheOrDownload(filepath, version))
             {
                 yield return www;
                 if (www.error != null)

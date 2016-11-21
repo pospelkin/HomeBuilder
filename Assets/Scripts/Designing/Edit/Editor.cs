@@ -86,6 +86,12 @@ namespace HomeBuilder.Designing
             PlanRoom.onSelect += OnSelect;
         }
 
+        public void ClearAllSigns()
+        {
+            selected = null;
+            UpdateControls();
+        }
+
         public void Remove()
         {
             if (selected != null)
@@ -98,6 +104,8 @@ namespace HomeBuilder.Designing
         {
             selected = plan;
             UpdateControls();
+
+            selected.transform.SetAsLastSibling();
         }
 
         float GetCoef(LayoutElement el)
@@ -174,7 +182,11 @@ namespace HomeBuilder.Designing
                 movePlan.rectTransform.sizeDelta = plan.rectTransform.sizeDelta;
                 movePlan.rectTransform.anchoredPosition = plan.rectTransform.anchoredPosition;
                 movePlan.controls.SetActive(false);
+                movePlan.controls.SetDragging(true);
                 movePlan.moving = true;
+
+                movePlan.transform.SetAsLastSibling();
+                plan.Mark();
             }
 
             movePlan.Move(change);
@@ -194,8 +206,8 @@ namespace HomeBuilder.Designing
                     changed = plans[i];
                     changedPos = movePlan.rectTransform.anchoredPosition/* + movePlan.rectTransform.sizeDelta / 2*/;
                     Debug.Log("Interchange ready");
-                    plan.Mark();
-                    movePlan.UnMark();
+                    //plan.Mark();
+                    //movePlan.UnMark();
                     Interchange(plan, changed);
                     break;
                 }
@@ -204,14 +216,14 @@ namespace HomeBuilder.Designing
             {
                 if (changed != null && !IsNear(movePlan, plan) && !IsNear(movePlan, changedPos) )
                 {
-                    movePlan.UnMark();
-                    plan.UnMark();
+                    //movePlan.UnMark();
+                    //plan.UnMark();
                     Interchange(plan, changed);
                     changed = null;
                 }
             }
 
-            if (changed == null) movePlan.MarkRed();
+            //if (changed == null) movePlan.MarkRed();
         }
 
         bool AllowChange(PlanRoom p1, PlanRoom p2)
@@ -257,8 +269,6 @@ namespace HomeBuilder.Designing
             movePlan    = null;
             changed     = null;
         }
-
-
 
         Dictionary<PlanRoom, Vector2> dictionary = new Dictionary<PlanRoom, Vector2>();
         void OnResize(PlanRoom plan, Vector2 type, Vector2 change)

@@ -346,7 +346,6 @@
     <None Include="Assets\Standard Assets\VoxelBusters\NativePlugins\XCodeModData.txt" />
     <None Include="Assets\Standard Assets\VoxelBusters\NativePlugins\link.xml" />
     <None Include="Assets\link.xml" />
-    <None Include="Assets\read me.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

@@ -105,17 +105,17 @@ namespace HomeBuilder.Designing
 
         public void Mark()
         {
-            GetComponent<Image>().color = Color.green;
+            controls.drawn.SetActive(true);
         }
 
         public void MarkRed()
         {
-            GetComponent<Image>().color = Color.red;
+            controls.drawn.SetActive(true);
         }
 
         public void UnMark()
         {
-            GetComponent<Image>().color = Color.white;
+            controls.drawn.SetActive(false);
         }
 
         void OnControlDrag(Vector2 type, Vector2 shift)

@@ -48,7 +48,8 @@ namespace HomeBuilder.Designing
         
         public Vector2 GetShift()
         {
-            return (Vector2) Input.mousePosition - initPos;
+            float c = 1536f / Screen.height;
+            return new Vector2((Input.mousePosition.x - initPos.x) * c, (Input.mousePosition.y - initPos.y) * c);
         }
 
         void Update()

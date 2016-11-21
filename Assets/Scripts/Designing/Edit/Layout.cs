@@ -192,7 +192,7 @@ namespace HomeBuilder.Designing
             if (onChange != null) onChange();
         }
 
-        float GetSpareSquare(bool min = false)
+        public float GetSpareSquare(bool min = false)
         {
             return GetSquare() - GetElemetsSquare(min);
         }

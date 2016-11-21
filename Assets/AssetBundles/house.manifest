@@ -1,0 +1,49 @@
+ManifestFileVersion: 0
+CRC: 1402477241
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 17a21fdf455719778fca1efaecb237dd
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 9aed5d2039e2b6db4ca1166f540ce697
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 1aad990e68f6f85498feef2cdf5252ca, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 612076682a0ce424a9d77784341e3b14, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 87d082498d83e3742be630e686dff0ab, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 91e6b23a4e276f6418299b7e20d35be9, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+- Class: 224
+  Script: {instanceID: 0}
+Assets:
+- Assets/Resources/Sprites/Bedroom/style_modern.jpg
+- Assets/Resources/Sprites/Bedroom/style_old.jpg
+- Assets/Resources/Sprites/Hall/style_classic.jpg
+- Assets/Resources/Sprites/Kitchen/style_classic.jpg
+- Assets/Resources/Sprites/Hall/style_old.jpg
+- Assets/Resources/Sprites/Hall/style_modern.jpg
+- Assets/Resources/Sprites/House/style_classic.jpg
+- Assets/Resources/Sprites/Bedroom/style_classic.jpg
+- Assets/Resources/Sprites/Kitchen/style_modern.jpg
+- Assets/Resources/Sprites/Bathroom/style_old.jpg
+- Assets/Resources/Sprites/Kitchen/style_old.jpg
+- Assets/Resources/Sprites/House/style_old.jpg
+- Assets/Resources/Prefabs/Bundle.prefab
+- Assets/Resources/Sprites/Bathroom/style_classic.jpg
+- Assets/Resources/Sprites/Bathroom/style_modern.jpg
+- Assets/Resources/Sprites/House/style_modern.jpg
+Dependencies: []
