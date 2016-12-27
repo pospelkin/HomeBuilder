@@ -66,6 +66,10 @@ namespace HomeBuilder.Designing
         {
             fixer = new Fixer();
             appartment.AddModule(m);
+            foreach (LayoutElement l in elements)
+            {
+                l.Destroy();
+            }
             elements = new List<LayoutElement>();
 
             fixer.Fix(appartment);
@@ -115,13 +119,6 @@ namespace HomeBuilder.Designing
 
         public void Destory()
         {
-
-            LayoutElement[] elements = GetElements();
-
-            for (int i = 0; i < elements.Length; i++)
-            {
-                elements[i].Destroy();
-            }
         }
 
         public LayoutElement[] GetElements()
@@ -229,8 +226,8 @@ namespace HomeBuilder.Designing
             }
 
             Vector2 rounded = RoundToNearest(newWidth, newHeight, new Vector2(x, y), type);
-            newWidth        = rounded.x;
-            newHeight       = rounded.y;
+            newWidth = rounded.x;
+            newHeight = rounded.y;
 
             if (newWidth < el.mWidth || newHeight < el.mHeight)
             {
@@ -293,7 +290,7 @@ namespace HomeBuilder.Designing
             float w = width,
                     h = height;
 
-            float nearingLimit = 0.4f;
+            float nearingLimit = 0.15f;
 
             int posX = (int)position.x,
                 posY = (int)position.y;

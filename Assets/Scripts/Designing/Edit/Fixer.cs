@@ -127,6 +127,8 @@ namespace HomeBuilder.Designing
 
             List<Rect>[] levels = new List<Rect>[rows];
 
+            float levelHeight = height / rows;
+
             int totalCount      = 0;
             float shareWidth    = 0;
             for (int i = rows-1; i >= 0; i--)
@@ -160,7 +162,7 @@ namespace HomeBuilder.Designing
                     {
                         widths[j] = Mathf.Max(shareWidth / end, module.GetParams().minWidth);
                     }
-                    rH = Mathf.Max(rH, Mathf.Max(module.GetParams().minSquare / widths[j], module.GetParams().minHeight));
+                    rH = Mathf.Max(rH, Mathf.Max(module.GetParams().minSquare / widths[j], levelHeight));
 
                     yCount++;
                     totalCount++;

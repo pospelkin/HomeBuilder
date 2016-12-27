@@ -50,8 +50,6 @@ namespace HomeBuilder.Designing
             {
                 Destroy(p.gameObject);
             }
-
-            plans = null;
             CreatePlans();
 
             UpdateAll();
@@ -78,12 +76,24 @@ namespace HomeBuilder.Designing
             }
 
             UpdateAll();
+        }
 
-            PlanRoom.onResize   += OnResize;
+        void OnEnable()
+        {
+            PlanRoom.onResize += OnResize;
             PlanRoom.onMove += OnMove;
             PlanRoom.onMoveEnd += OnMoveEnd;
             PlanRoom.onRemove += OnRemove;
             PlanRoom.onSelect += OnSelect;
+        }
+
+        void OnDisable()
+        {
+            PlanRoom.onResize -= OnResize;
+            PlanRoom.onMove -= OnMove;
+            PlanRoom.onMoveEnd -= OnMoveEnd;
+            PlanRoom.onRemove -= OnRemove;
+            PlanRoom.onSelect -= OnSelect;
         }
 
         public void ClearAllSigns()
@@ -286,7 +296,7 @@ namespace HomeBuilder.Designing
             float   xChange = v.x / coef * type.x,
                     yChange = v.y / coef * type.y;
 
-            float limit = 0.1f;
+            float limit = 0.05f;
             if (Mathf.Abs( xChange ) > 0 && Mathf.Abs( yChange )> limit)
             {
                 plan.layoutElement.RequestSizeChage(type, new Vector2(xChange, yChange));
@@ -298,10 +308,14 @@ namespace HomeBuilder.Designing
                 plan.layoutElement.RequestSizeChage(type, new Vector2(xChange, 0));
                 v.x = 0;
             }
-            else if (Mathf.Abs( yChange ) > limit)
+            else if (Mathf.Abs(yChange) > limit)
             {
                 plan.layoutElement.RequestSizeChage(type, new Vector2(0, yChange));
                 v.y = 0;
+            }
+            else
+            {
+                Debug.Log("limit " + limit + " and we have " + xChange + " and " + yChange);
             }
             dictionary[plan] = v;
 
@@ -340,13 +354,9 @@ namespace HomeBuilder.Designing
 
         void OnDestroy()
         {
-            PlanRoom.onResize -= OnResize;
-            PlanRoom.onMove -= OnMove;
-            PlanRoom.onRemove -= OnRemove;
-            PlanRoom.onSelect -= OnSelect;
-
             layout.onChange -= UpdateAll;
 
+            plans  = null;
             layout = null;
         }
 

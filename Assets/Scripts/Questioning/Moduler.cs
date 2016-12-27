@@ -161,7 +161,7 @@ namespace HomeBuilder.Questioning
             allModules.Clear();
 
 
-            AddSeparator("FLOORS");
+            AddSeparator("NUMBER OF FLOORS");
 
             AddFloorModule();
 

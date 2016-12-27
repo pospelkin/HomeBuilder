@@ -7,7 +7,7 @@ namespace HomeBuilder.Designing
     {
 
         //readonly public Cube cube;
-        readonly public ModuleInfo info;
+        public ModuleInfo info;
 
         float width, height;
         public float mWidth, mHeight;
@@ -98,7 +98,8 @@ namespace HomeBuilder.Designing
 
         public void Destroy()
         {
-
+            info   = null;
+            layout = null;
         }
 
         public Vector2 GetSize()

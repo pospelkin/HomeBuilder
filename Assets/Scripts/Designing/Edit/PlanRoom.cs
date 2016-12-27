@@ -12,18 +12,20 @@ namespace HomeBuilder.Designing
         public delegate void OnMoveEnd(PlanRoom plan);
         public delegate void OnResize(PlanRoom plan, Vector2 type, Vector2 change);
         public delegate void OnRemove(PlanRoom plan);
-        static public OnSelect onSelect;
-        static public OnMove onMove;
-        static public OnResize onResize;
-        static public OnMoveEnd onMoveEnd;
-        static public OnRemove onRemove;
+        public static OnSelect onSelect;
+        public static OnMove onMove;
+        public static OnResize onResize;
+        public static OnMoveEnd onMoveEnd;
+        public static OnRemove onRemove;
+
+        public static int id = 0;
 
         public bool moving = false;
 
         public Text squareText;
         public PlanRoomControls controls;
         public LayoutElement layoutElement;
-
+        
         public RectTransform rectTransform {
             get { return GetComponent<RectTransform>(); }
         }
@@ -70,6 +72,8 @@ namespace HomeBuilder.Designing
             controls.onControlDrag += OnControlDrag;
             controls.onControlClick += OnControlClick;
             controls.onControlDragEnd += OnControlDragEnd;
+
+            name += "_" + id++;
         }
 
         void OnDestroy()
@@ -77,6 +81,9 @@ namespace HomeBuilder.Designing
             controls.onControlDrag -= OnControlDrag;
             controls.onControlClick -= OnControlClick;
             controls.onControlDragEnd -= OnControlDragEnd;
+
+            Destroy(controls);
+            layoutElement = null;
         }
 
         void OnControlDragEnd()

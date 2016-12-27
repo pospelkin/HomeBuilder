@@ -63,11 +63,11 @@ namespace HomeBuilder.Designing
                 Vector2 size = Vector2.zero;
                 if (rect.rect.width < rect.rect.height)
                 {
-                    size = new Vector2(rect.rect.width + 50, rect.rect.height);
+                    size = new Vector2(rect.rect.width + 100, rect.rect.height - 100);
                 }
                 else
                 {
-                    size = new Vector2(rect.rect.width, rect.rect.height + 50);
+                    size = new Vector2(rect.rect.width - 100, rect.rect.height + 100);
                 }
                 box.size    = size;
                 box.offset  = new Vector2(0, 0);

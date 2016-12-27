@@ -296,10 +296,6 @@ namespace HomeBuilder.Designing
 
         void OnDestroy()
         {
-            foreach (Layout l in layouts)
-            {
-                l.Destory();
-            }
         }
 
         Cube GetCube(string prefab)
